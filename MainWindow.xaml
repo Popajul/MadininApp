@@ -1,0 +1,69 @@
+﻿<Window x:Class="MadininApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:local="clr-namespace:MadininApp.User_Control" xmlns:viewmodel="clr-namespace:MadininApp.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
+        mc:Ignorable="d"
+        WindowState="Maximized">
+
+    <!--Couleur de fond de la fenêtre -->
+    <Window.Background>
+        <SolidColorBrush Color ="White"/>
+    </Window.Background>
+
+
+    <Grid>
+        <!-- Conteneur principal -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Image header-->
+        <Image Source="https://www.madinin-art.net/images/logo_la_lettre_blanc.jpg" MaxWidth="500"></Image>
+        <!--Scrolling-->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+
+            <!-- Tuiles selection article-->
+            <StackPanel Background="White">
+                <ItemsControl ItemsSource="{Binding DataCollection}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" ItemWidth="220"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <local:Tuile Article="{Binding}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+        </ScrollViewer>
+        <!-- Bouton Valider et case à cocher  Select All -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <!-- Pour CheckBox -->
+                <ColumnDefinition Width="*"/>
+                <!-- Espace vide à gauche du bouton -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Pour Button -->
+                <ColumnDefinition Width="*"/>
+                <!-- Espace vide à droite du bouton -->
+            </Grid.ColumnDefinitions>
+
+            <!-- CheckBox alignée à gauche -->
+            <CheckBox Margin="20" Grid.Column="0" Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Left"/>
+
+            <!-- Button centré -->
+            <local:Button1 Button1Content="Ok" ButtonClick="OnValiderClicked" Grid.Column="2" HorizontalAlignment="Center"/>
+            <local:Button1 Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor" Grid.Column="3" HorizontalAlignment="Right"/>
+
+            <!-- Les colonnes 1 et 3 servent d'espaces vides pour centrer le bouton -->
+        </Grid>
+    </Grid>
+</Window>
