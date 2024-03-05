@@ -22,7 +22,9 @@ namespace MadininApp.Objects
         public string HtmlContent { get; set; }
         public bool IsActualite { get => Title.Contains("Actualités"); }
         public bool IsTopArticle { get; set; }
+        public string MadinUrl { get; set; }
         public HtmlNode Node { get; set; }
+
         /// <summary>
         /// On veut une mesure comparative de la taille des articles
         /// </summary>

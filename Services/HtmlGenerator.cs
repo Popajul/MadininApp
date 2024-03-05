@@ -135,7 +135,7 @@ namespace MadininApp.Services
                 {
                     categoryLinks = String.Join(",", article.Categories.Select(cat => $"<span><a href = \"{cat.Url}\">{cat.Name}</a></span>"));
                 }
-                string html = $" <div class=\"{classe}\"><h4>{categoryLinks}</h4><h2>{article.Title}</h2><h3>{article.Author}</h3><img src=\"{article.ImageUrl}\"><p>{article.HtmlContent}</p></div>";
+                string html = $" <div class=\"{classe}\"><h4>{categoryLinks}</h4><h2><a href={article.MadinUrl}>{article.Title}</a></h2><h3>{article.Author}</h3><img src=\"{article.ImageUrl}\"><p>{article.HtmlContent}</p></div>";
                 articlesHtml.Append(html);
             }
 
@@ -144,7 +144,7 @@ namespace MadininApp.Services
             foreach (var article in lastArticles)
             {
                 string classe = "article";
-                lastArticlesHtml.Append($"<div class=\"{classe}\"><h4>{article.Category}</h4><h2>{article.Title}</h2><h3>{article.Author}</h3><img src=\"{article.ImageUrl}\"><p>{article.HtmlContent}</p></div>");
+                lastArticlesHtml.Append($"<div class=\"{classe}\"><h4>{article.Category}</h4><h2><a href={article.MadinUrl}>{article.Title}</a></h2><h3>{article.Author}</h3><img src=\"{article.ImageUrl}\"><p>{article.HtmlContent}</p></div>");
             }
 
             // Insérer les articles dans le template
@@ -152,7 +152,7 @@ namespace MadininApp.Services
             htmlTemplate = htmlTemplate.Replace(" <!-- Two Articles Here -->", lastArticlesHtml.ToString());
 
 
-            string topArticlesHtml = ($"<h3>{topArticle.Category}</h3><h1>{topArticle.Title}</h1><h4>{topArticle.Author}</h4><img src=\"{topArticle.ImageUrl}\"><p>{topArticle.HtmlContent}</p>");
+            string topArticlesHtml = ($"<h3>{topArticle.Category}</h3><h1><a href={topArticle.MadinUrl}>{topArticle.Title}</a></h1><h4>{topArticle.Author}</h4><img src=\"{topArticle.ImageUrl}\"><p>{topArticle.HtmlContent}</p>");
             htmlTemplate = htmlTemplate.Replace("<!-- Top Article Here -->", topArticlesHtml.ToString());
             // Sauvegarder le fichier HTML résultant
             File.WriteAllText(_outputPath, htmlTemplate);

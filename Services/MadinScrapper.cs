@@ -160,6 +160,8 @@ namespace MadininApp.Services
                 {
                     author = content.Substring(startDashIndex + 1, endDashIndex - startDashIndex - 1).Trim();
                 }
+
+                var madinUrl = contentNode.SelectSingleNode($"(.//*[contains(concat(' ', normalize-space(@class), ' '), ' read-more ')])")?.GetAttributeValue("href", string.Empty) ?? "";
                 // Nettoyage
                 var cleanedContentNode = NewNodeWithoutAuthorAndImg(contentNode, author);
                 bool isActualité = title.Contains("Actualités");
@@ -183,7 +185,8 @@ namespace MadininApp.Services
                         Date = date,
                         Title = title,
                         ImageUrl = src,
-                        Author = author
+                        Author = author,
+                        MadinUrl = madinUrl
                     });
                 var topArticle = madinArticles.First();
                 topArticle.IsTopArticle = true;
