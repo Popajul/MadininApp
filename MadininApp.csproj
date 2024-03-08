@@ -111,6 +111,7 @@
       <DependentUpon>Tuile.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="VisualTreeHelperExtension.cs" />
     <Compile Include="Windows\TextEditor.xaml.cs">
       <DependentUpon>TextEditor.xaml</DependentUpon>
     </Compile>

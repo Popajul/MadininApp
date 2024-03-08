@@ -1,4 +1,5 @@
-﻿using MadininApp.Objects;
+﻿using HtmlAgilityPack;
+using MadininApp.Objects;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -78,12 +79,55 @@ namespace MadininApp.Services
             indexCoupure = orderedList.IndexOf(rightColulmnArticles.First());
             return orderedList;
         }
-
-        public static string CreateHtmlFile(List<MadinArticle> articles, BlockCollection leMotDuChef)
+        private static string GenerateHTMLTable(List<string> dataList)
         {
-            var articlesSelected = OrderSelectedArticle(articles.Where(a => !a.IsTopArticle), out int indexCoupure);
+            // Créer un objet StringBuilder pour construire le code HTML de la table
+            StringBuilder htmlBuilder = new StringBuilder();
+
+            // Ouvrir la balise de début de la table
+            htmlBuilder.AppendLine("<table>");
+            int length = dataList.Count;
+            /*int l = length%2 == 0 ? length / 2 : length / 2 + 1;*/
+            // Itérer sur la liste de données
+            for (int i = 0; i < length; i+=2)
+            {
+                // Ouvrir une nouvelle ligne de tableau
+                htmlBuilder.AppendLine("<tr>");
+
+                // Ajouter les balises de cellules de données avec les identifiants correspondants aux index
+                htmlBuilder.AppendLine($"<td id=\"{i}\"></td>");
+                htmlBuilder.AppendLine($"<td id=\"{i + 1}\"></td>");
+
+                // Fermer la ligne de tableau
+                htmlBuilder.AppendLine("</tr>");
+            }
+
+            // Fermer la balise de fin de la table
+            htmlBuilder.AppendLine("</table>");
+
+            // Retourner le code HTML de la table
+            return htmlBuilder.ToString();
+        }
+
+        private static string FillHTMLTable(List<string> articlesHtml, string htmltable)
+        {
+            int length = articlesHtml.Count;
+            int l = length == 0 ? length / 2 : length / 2 + 1;
+            // Itérer sur la liste de nœuds HTML
+            for (int i = 0; i < articlesHtml.Count; i++)
+            {
+                // Ajouter le contenu des nœuds aux balises de cellules de données correspondantes
+                htmltable = htmltable.Replace($"<td id=\"{i}\"></td>", $"<td id=\"{i}\">{articlesHtml[i]}</td>");
+            }
+
+            return htmltable;
+        }
+
+        public static string CreateHtmlFile(List<MadinArticle> articles,MadinArticle topArticle, BlockCollection leMotDuChef, string positionBasLettre)
+        {
+            var articlesSelected = articles.Where(a => !a.IsTopArticle).ToList();
             List<MadinArticle> lastArticles = new List<MadinArticle>();
-            var topArticle = articles.SingleOrDefault(a => a.IsTopArticle);
+            
             var technoArticle = new MadinArticle()
             {
                 Author = "",
@@ -97,36 +141,103 @@ namespace MadininApp.Services
                 Title = _technoTitle,
                 IsTopArticle = false
             };
-            articlesSelected.Add(technoArticle);
+            
             if (leMotDuChef.Any())
             {
-                var articleDuChef = CreateMadinArticleFromBlockCollection(leMotDuChef);
+                var articleDuChef = CreateMadinArticleFromBlockCollection(leMotDuChef,positionBasLettre);
                 lastArticles.Add(articleDuChef);
             }
+
+            // On génere un nouvel article contenant les messages de fin de lettre et on l'ajoute à la liste des derniers articles
+            var articleFinLettre1 = new MadinArticle()
+            {
+                Author = "",
+                Category = "",
+                Content = "",
+                Date = "",
+                HtmlContent = "<span style=\"color: red;\">La lettre de Madinin'Art est publié le 1er, le 10 et le 20 de chaque mois</span>",
+                ImageUrl = "",
+                IsChecked = true,
+                Node = null,
+                Title = "",
+                IsTopArticle = false
+            };
+            var articleFinLettre2 = new MadinArticle()
+            {
+                Author = "",
+                Category = "",
+                Content = "",
+                Date = "",
+                HtmlContent = "<span style=\"color:black;\">Le site de Madinin'Art</span>\r\n<span style=\"color:red;\">est mis à jour</span>\r\n<span style=\"color:green;\">continûment</span>",
+                ImageUrl = "",
+                IsChecked = true,
+                Node = null,
+                Title = "",
+                IsTopArticle = false
+            };
+            lastArticles.Add(articleFinLettre1);
+            lastArticles.Add(articleFinLettre2);
 
             // Charger le template HTML
             string htmlTemplate = File.ReadAllText(_path);
 
-            // Construire les articles HTML
-            StringBuilder articlesHtml = new StringBuilder();
+            
+           /* MadinArticle overflowArticle = new MadinArticle();*/
 
-            double articlesHeight = articlesSelected.Sum(a => a.HeigthRelativeMeasure);
-            double columnHeight = articlesHeight / 2;
-            // on cherche l'article qui entraine le depassement de capacité de la premiere colonne
-            MadinArticle overflowArticle = new MadinArticle();
-           // double heightAccumulator = 0;
-            /*foreach(var article in articlesSelected)
+            StringBuilder lastArticlesHtml = new StringBuilder();
+            foreach (var article in lastArticles)
             {
-                heightAccumulator+= article.HeigthRelativeMeasure;
-                if(heightAccumulator > columnHeight)
+                var htmlImage = string.IsNullOrEmpty(article.ImageUrl) ? "" : $"<img src=\"{article.ImageUrl}\">";
+                string classe = positionBasLettre == "en dessous" ? "footer-element" : "article";
+                
+                lastArticlesHtml.Append($"<div class=\"{classe}\"><h4>{article.Category}</h4><h2><a href={article.MadinUrl}>{article.Title}</a></h2><h3>{article.Author}</h3>{htmlImage}<p>{article.HtmlContent}</p></div>");
+            }
+
+            
+            if (positionBasLettre == "à gauche")
+            {
+                // On place le techno article et les lastArticles à gauche
+                var fakeArticle = articlesSelected.FirstOrDefault(a=>a.IsPlaceHolder);
+                if (fakeArticle == null)
                 {
-                    overflowArticle = article;
-                    articlesSelected.Remove(overflowArticle);
-                    break;
+                    positionBasLettre = "en dessous";
                 }
-            }*/
+                else
+                {
+                    // On réuni le html content 
+                    var htmlContent = lastArticlesHtml.ToString();
 
+                    technoArticle.HtmlContent += htmlContent;
+                    var fakeIndex = articlesSelected.IndexOf(fakeArticle);
+                    articlesSelected[fakeIndex] =technoArticle;
+                }
+            }
+            if (positionBasLettre == "à droite")
+            {
+                // On réuni le html content 
+                var htmlContent = lastArticlesHtml.ToString();
 
+                technoArticle.HtmlContent += htmlContent;
+                articlesSelected.Add(technoArticle);
+            }
+            if(positionBasLettre == "à droite séparé de l'article techno")
+            {
+                articlesSelected.Add(technoArticle);
+                // On réuni le html content 
+                var htmlContent = lastArticlesHtml.ToString();
+                var nextArticle = MadinArticle.GetPlaceHolderArticle();
+                nextArticle.HtmlContent = htmlContent;
+                nextArticle.ImageUrl = "";
+                articlesSelected.Add(nextArticle);
+
+            }
+            if (positionBasLettre == "en dessous")
+            {
+                articlesSelected.Add(technoArticle);
+            }
+
+            // Construire les articles HTML
+            List<string> articlesHtml = new List<string>();
             foreach (var article in articlesSelected)
             {
                 string classe = article.IsActualite ? " article actualite" : "article";
@@ -135,52 +246,38 @@ namespace MadininApp.Services
                 {
                     categoryLinks = String.Join(",", article.Categories.Select(cat => $"<span><a href = \"{cat.Url}\">{cat.Name}</a></span>"));
                 }
-                string html = $" <div class=\"{classe}\"><h4>{categoryLinks}</h4><h2><a href={article.MadinUrl}>{article.Title}</a></h2><h3>{article.Author}</h3><img src=\"{article.ImageUrl}\"><p>{article.HtmlContent}</p></div>";
-                articlesHtml.Append(html);
+                var htmlImage = string.IsNullOrEmpty(article.ImageUrl) ? "" : $"<img src=\"{article.ImageUrl}\">";
+                string html = $" <div class=\"{classe}\"><h4>{categoryLinks}</h4><h2><a href={article.MadinUrl}>{article.Title}</a></h2><h3>{article.Author}</h3>{htmlImage}<p>{article.HtmlContent}</p></div>";
+                articlesHtml.Add(html);
             }
 
-            StringBuilder lastArticlesHtml = new StringBuilder();
 
-            foreach (var article in lastArticles)
-            {
-                string classe = "article";
-                lastArticlesHtml.Append($"<div class=\"{classe}\"><h4>{article.Category}</h4><h2><a href={article.MadinUrl}>{article.Title}</a></h2><h3>{article.Author}</h3><img src=\"{article.ImageUrl}\"><p>{article.HtmlContent}</p></div>");
-            }
+            // Remplir le tableau HTML avec les articles
+            string htmlTable = GenerateHTMLTable(articlesHtml);
+            string articlesHtmlTable = FillHTMLTable(articlesHtml, htmlTable);
+            
+
+           
 
             // Insérer les articles dans le template
-            htmlTemplate = htmlTemplate.Replace("<!-- Articles Here -->", articlesHtml.ToString());
+            htmlTemplate = htmlTemplate.Replace("<!-- Articles Here -->", articlesHtmlTable);
             htmlTemplate = htmlTemplate.Replace(" <!-- Two Articles Here -->", lastArticlesHtml.ToString());
 
 
             string topArticlesHtml = ($"<h3>{topArticle.Category}</h3><h1><a href={topArticle.MadinUrl}>{topArticle.Title}</a></h1><h4>{topArticle.Author}</h4><img src=\"{topArticle.ImageUrl}\"><p>{topArticle.HtmlContent}</p>");
             htmlTemplate = htmlTemplate.Replace("<!-- Top Article Here -->", topArticlesHtml.ToString());
+
+            if(positionBasLettre == "en dessous")
+            {
+                htmlTemplate = htmlTemplate.Replace("<!--footer element here-->", lastArticlesHtml.ToString());
+            }
             // Sauvegarder le fichier HTML résultant
             File.WriteAllText(_outputPath, htmlTemplate);
 
-            if (!String.IsNullOrEmpty(overflowArticle.Title))
-            {
-                string classe = overflowArticle.IsActualite ? " article actualite overflow" : "article overflow";
-                var categoryLinks = "";
-                if (overflowArticle.Categories != null)
-                {
-                    categoryLinks = String.Join(",", overflowArticle.Categories.Select(cat => $"<span><a href = \"{cat.Url}\">{cat.Name}</a></span>"));
-                }
-                string overflowHtml = $" <div class=\"{classe}\"><h4>{categoryLinks}</h4><h2>{overflowArticle.Title}</h2><h3>{overflowArticle.Author}</h3><img src=\"{overflowArticle.ImageUrl}\"><p>{overflowArticle.HtmlContent}</p></div>";
-                htmlTemplate = htmlTemplate.Replace("<!--overflow article here-->", overflowHtml.ToString());
-            }
-          /*  Window w = new Window();
-            w.WindowState = WindowState.Maximized;
-            WebView2 b = new WebView2();
-
-            await b.EnsureCoreWebView2Async(null);
-            
-            b.CoreWebView2.NavigateToString(htmlTemplate);
-            w.Content = b;
-            w.Show();*/
 
             return htmlTemplate;
         }
-        private static MadinArticle CreateMadinArticleFromBlockCollection(BlockCollection leMotDuChef)
+        private static MadinArticle CreateMadinArticleFromBlockCollection(BlockCollection leMotDuChef, string positionBasLettre)
         {
             MadinArticle article = new MadinArticle()
             {
@@ -214,6 +311,9 @@ namespace MadininApp.Services
                             textALign = "left";
                             break;
                     }
+                    if(positionBasLettre == "en dessous")
+                        textALign = "center";
+
                     sb.AppendLine($"<p style=\"text-align:{textALign};\">");
                     sb.AppendLine($"<span style=\"[autreStyle]\">");
 
@@ -227,7 +327,7 @@ namespace MadininApp.Services
                     {
                         if (inline is LineBreak)
                         {
-                            sb.Append("</span><br>");
+                            sb.Append("</span><br><span style=\"[autreStyle]\">");
                             lineBreak = true;
                             continue;
                         }
@@ -244,11 +344,12 @@ namespace MadininApp.Services
                                 {
                                     sb.Append("</span>");
                                     lineBreak = false;
+                                    sb.AppendLine("<span style=\"[autreStyle]\">");
                                 }
 
-                                sb.AppendLine("<span style=\"[autreStyle]\">");
+                                
                             }
-                            string style = $"font-weight:{content.FontWeight};font-size:{content.FontSize}px; color:{content.FontColor};";
+                            string style = $"font-weight:{content.FontWeight};font-size:{content.FontSize}pt; color:{content.FontColor};";
                             sb.Replace("[autreStyle]", style);
                             sb.Append(content.Text);
 
@@ -257,7 +358,7 @@ namespace MadininApp.Services
 
                     }
                 }
-                sb.AppendLine("</p>");
+                sb.AppendLine("</span></p>");
             }
             article.HtmlContent = sb.ToString();
             return article;

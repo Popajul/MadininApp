@@ -12,6 +12,34 @@ namespace MadininApp.Objects
     }
     public class MadinArticle : INotifyPropertyChanged
     {
+        public MadinArticle()
+        {
+            IsPlaceHolder = false;
+        }
+
+        public static MadinArticle GetPlaceHolderArticle()
+        {
+            var article = new MadinArticle()
+            {
+                IsPlaceHolder = true,
+                Title = "",
+                Content = "",
+                Date = "",
+                Author = "",
+                ImageUrl = "https://www.madinin-art.net/images/logo_la_lettre_blanc.jpg",
+                HtmlContent = "",
+                MadinUrl = "",
+                Node = null,
+                IsTopArticle = false,
+                IsChecked = true,
+                Category = "",
+                Categories = new List<Category>()
+
+            };
+
+
+            return article;
+        }
         public string Content { get; set; }
         public string Category { get; set; }
         public IEnumerable<Category> Categories { get; set; }
@@ -20,15 +48,30 @@ namespace MadininApp.Objects
         public string Author { get; set; }
         public string ImageUrl { get; set; }
         public string HtmlContent { get; set; }
-        public bool IsActualite { get => Title.Contains("Actualités"); }
-        public bool IsTopArticle { get; set; }
+        public bool IsActualite { get => Title?.Contains("Actualités") ?? false; }
+        private bool _isTopArticle;
+        public bool IsTopArticle
+        {
+            get { return _isTopArticle; }
+            set
+            {
+                if (_isTopArticle != value)
+                {
+                    _isTopArticle = value;
+                    OnPropertyChanged(nameof(IsTopArticle));
+                }
+            }
+        }
         public string MadinUrl { get; set; }
         public HtmlNode Node { get; set; }
+        public bool IsPlaceHolder { get; set; } = false;
+        public bool IsNotPlaceHolder { get => !IsPlaceHolder; }
+
 
         /// <summary>
         /// On veut une mesure comparative de la taille des articles
         /// </summary>
-        public int HeigthRelativeMeasure { get => Content.Length; }
+        public int HeigthRelativeMeasure { get => Content?.Length ?? 0; }
 
         private bool _isChecked;
         public bool IsChecked

@@ -188,11 +188,50 @@ namespace MadininApp.Services
                         Author = author,
                         MadinUrl = madinUrl
                     });
-                var topArticle = madinArticles.First();
-                topArticle.IsTopArticle = true;
-                topArticle.IsChecked = true;
             }
-            return madinArticles.GroupBy(art => art.Title).Select(g => g.First()).ToList();
+            var topArticle = madinArticles.First();
+            madinArticles.Remove(topArticle);
+            topArticle.IsTopArticle = true;
+            topArticle.IsChecked = true;
+            // On ne garde pas les articles de category Yekri
+            // On supprime les doublons basé sur le titre
+            // On ordonne par catégory
+            var articlesSansCategory = madinArticles.Where(a => string.IsNullOrWhiteSpace(a.Category)).ToList();
+            var articleAvecCategory = madinArticles.Where(a => !string.IsNullOrWhiteSpace(a.Category)).ToList();
+
+            var filteredArticles = articleAvecCategory.Where(a => !a.Category.Contains("Yékri")).GroupBy(art => art.Title).Select(g => g.First()).Where(a=>a.Title != topArticle.Title).GroupBy(a => a.Category).SelectMany(g => g).ToList();
+
+            var result = new List<MadinArticle>();
+            var firstArticle = filteredArticles.First();
+            filteredArticles.Remove(firstArticle);
+            result.Add(firstArticle);
+
+            while (filteredArticles.Count != 0)
+            {
+                var lastArticle = result.Last();
+                var article = filteredArticles.FirstOrDefault(a => a.Category != lastArticle.Category);
+                if (article == null)
+                {
+                    break;
+                }
+                filteredArticles.Remove(article);
+                result.Add(article);
+            }
+
+            while (filteredArticles.Count != 0)
+            {
+                var article = filteredArticles.First();
+                filteredArticles.Remove(article);
+                var articleSansCategory = articlesSansCategory.FirstOrDefault(a => a.Title == article.Title);
+                if (articleSansCategory != null)
+                {
+                    result.Add(articleSansCategory);
+                    articlesSansCategory.Remove(articleSansCategory);
+                }
+                result.Add(article);
+            }
+            result.Insert(0, topArticle);
+            return result;
         }
         /// <summary>
         /// Retourne une copie du Content Node débarrassé de l'auteur et de l'image
