@@ -38,8 +38,8 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="50"/>
-                    <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Border Background="WhiteSmoke" Width="200" Grid.Row="0">
@@ -65,7 +65,7 @@
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                         </ListBox>
-                        <Button Click="OnOrderCategoryChanged">VALIDER</Button>
+                        <local:Button1 Button1Content="VALIDER" ButtonClick="OnOrderCategoryChanged"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -118,6 +118,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="100" />
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             
             <local:Button1 Grid.Row="1" Grid.Column="1" Button1Content="Valider la sélection" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Center"/>
@@ -135,8 +137,19 @@
                 </StackPanel>
               
             </Border>
-            <local:Button1 Grid.Row="7" Grid.Column="1" Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Center"/>
-
+            <local:Button1 Grid.Row="8" Grid.Column="1" Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Center"/>
+            <TextBox Grid.Row="9" Grid.Column="1" Text="CSS inline :&#x0a; https://premailer.dialect.ca/" TextWrapping="Wrap" HorizontalAlignment="Center" Width="200" AcceptsReturn="True" TextAlignment="Center" IsEnabled="False" BorderThickness="0" BorderBrush="Transparent">
+                
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Style.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="Text" Value="" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
             <!-- Les colonnes 1 et 3 servent d'espaces vides pour centrer le bouton -->
         </Grid>
     </Grid>
