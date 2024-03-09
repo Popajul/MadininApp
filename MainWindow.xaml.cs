@@ -87,7 +87,7 @@ namespace MadininApp
         {
             // suppression des article non selectionné de la liste des articles
             Model.DataCollection = new ObservableCollection<MadinArticle>(Model.DataCollection.Where(a => a.IsChecked));
-            Model.OtherArticles = new ObservableCollection<MadinArticle>(Model.OtherArticles.Where(a => a.IsChecked));
+            Model.OtherArticles = new ObservableCollection<MadinArticle>(Model.OtherArticles.Where(a => a?.IsChecked??false));
             RefreshDataContextCategories();
             UpdateTuileDroppedEventSubscription();
         }
@@ -189,11 +189,10 @@ namespace MadininApp
                     sourceColumn.Remove(fakeArticleInSourceColumn);
                 }
 
-                var FakeArticleInTargetColumn = targetColumn.FirstOrDefault(a => a.IsPlaceHolder);
-                if (FakeArticleInTargetColumn != null)
-                {
-                    targetColumn.Remove(FakeArticleInTargetColumn);
-                }
+                var FakeArticleInTargetColumn = targetColumn?.FirstOrDefault(a => a?.IsPlaceHolder??true);
+                
+                targetColumn.Remove(FakeArticleInTargetColumn);
+                
                 // On Supprime l'article source de sa colonne d'origine
                 sourceColumn.Remove(articleSource);
                 // On l'insert dans la colonne cible
@@ -220,8 +219,8 @@ namespace MadininApp
                 // On supprime les éventuelle articles vides
                 if (targetColumn.Count > sourceColumn.Count && targetIndex % 2 == 0)
                 {
-                    var previousAddedfakeArticle = targetColumn.FirstOrDefault(a => a.IsPlaceHolder);
-                    if(previousAddedfakeArticle != null)
+                    var previousAddedfakeArticle = targetColumn.FirstOrDefault(a => a?.IsPlaceHolder??true);
+                    
                         targetColumn.Remove(previousAddedfakeArticle);
                 }
 
