@@ -88,6 +88,7 @@ namespace MadininApp
             // suppression des article non selectionné de la liste des articles
             Model.DataCollection = new ObservableCollection<MadinArticle>(Model.DataCollection.Where(a => a.IsChecked));
             Model.OtherArticles = new ObservableCollection<MadinArticle>(Model.OtherArticles.Where(a => a.IsChecked));
+            RefreshDataContextCategories();
             UpdateTuileDroppedEventSubscription();
         }
         //Generation de la lettre Html
@@ -337,7 +338,7 @@ namespace MadininApp
             var articlesSansCategory = madinArticles.Where(a => string.IsNullOrWhiteSpace(a.Category)).ToList();
             var articleAvecCategory = madinArticles.Where(a => !string.IsNullOrWhiteSpace(a.Category)).ToList();
 
-            var articleGroupByCategory = madinArticles.GroupBy(a => a.Category);
+            var articleGroupByCategory = articleAvecCategory.GroupBy(a => a.Category);
             List<IGrouping<string,MadinArticle>> orderedGroupByCategory = new List<IGrouping<string, MadinArticle>>();
 
             foreach (var category in orderedCategories)
@@ -378,6 +379,7 @@ namespace MadininApp
                 }
                 result.Add(article);
             }
+            result.AddRange(articlesSansCategory);
            
 
             

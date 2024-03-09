@@ -6,6 +6,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
+using System.Windows.Markup;
+using System.Windows.Media;
 
 namespace MadininApp.Services
 {
@@ -193,12 +196,67 @@ namespace MadininApp.Services
             madinArticles.Remove(topArticle);
             topArticle.IsTopArticle = true;
             topArticle.IsChecked = true;
+
+            // On génére l'article chroniques de Jean-Marie-Nol et l'article Politique
+            var template = "<p><span><a href=\"[MadinUrl]\">[Title]</a></span></p>";
+            var JMArticles = madinArticles.Where(a => a.Category.Contains("Les chroniques de Jean-Marie Nol")).Select(a => new { title = a.Title, url = a.MadinUrl, image = a.ImageUrl }).ToList();
+            var politiqueArticles = madinArticles.Where(a => a.Category == "Politiques").Select(a => new { title = a.Title, url = a.MadinUrl, image = a.ImageUrl }).ToList();
+
+            MadinArticle JMArticle = null;
+            if(JMArticles.Count >= 3)
+            {
+                JMArticle = new MadinArticle()
+                {
+                    Title = "Les chroniques de Jean-Marie Nol",
+                    Category = "",
+                    MadinUrl = "https://www.madinin-art.net/cat/sciences_sociales/economie/les-chroniques-de-jean-marie-nol/",
+                    ImageUrl = JMArticles.FirstOrDefault()?.image,
+                    IsTopArticle = false,
+                    IsPlaceHolder = false,
+                };
+            }
+
+            MadinArticle politicArticle = null;
+            if (politiqueArticles.Count >= 3)
+            {
+                politicArticle = new MadinArticle()
+                {
+                    Title = "Politiques",
+                    Category = "",
+                    MadinUrl = "https://www.madinin-art.net/cat/sciences_sociales/politiques/",
+                    ImageUrl = politiqueArticles.FirstOrDefault()?.image,
+                    IsTopArticle = false,
+                    IsPlaceHolder = false,
+                };
+            }
+
+            if(JMArticle != null)
+            {
+                JMArticle.HtmlContent = "<div>";
+                foreach (var article in JMArticles)
+                {
+                    JMArticle.HtmlContent += template.Replace("[MadinUrl]", article.url).Replace("[Title]", article.title);
+                }
+                JMArticle.HtmlContent += "</div>";
+                madinArticles.Add(JMArticle);
+            }
+
+            if (politicArticle != null)
+            {
+                politicArticle.HtmlContent = "<div>";
+                foreach (var article in politiqueArticles)
+                {
+                    politicArticle.HtmlContent += template.Replace("[MadinUrl]", article.url).Replace("[Title]", article.title);
+                }
+                politicArticle.HtmlContent += "</div>";
+                madinArticles.Add(politicArticle);
+            }
+
             // On ne garde pas les articles de category Yekri
             // On supprime les doublons basé sur le titre
             // On ordonne par catégory
             var articlesSansCategory = madinArticles.Where(a => string.IsNullOrWhiteSpace(a.Category)).ToList();
             var articleAvecCategory = madinArticles.Where(a => !string.IsNullOrWhiteSpace(a.Category)).ToList();
-
             var filteredArticles = articleAvecCategory.Where(a => !a.Category.Contains("Yékri")).GroupBy(art => art.Title).Select(g => g.First()).Where(a=>a.Title != topArticle.Title).GroupBy(a => a.Category).SelectMany(g => g).ToList();
 
             var result = new List<MadinArticle>();
@@ -230,7 +288,10 @@ namespace MadininApp.Services
                 }
                 result.Add(article);
             }
+            result.AddRange(articlesSansCategory);
             result.Insert(0, topArticle);
+
+             
             return result;
         }
         /// <summary>
