@@ -117,6 +117,12 @@ namespace MadininApp.Services
             for (int i = 0; i < articlesHtml.Count; i++)
             {
                 // Ajouter le contenu des nœuds aux balises de cellules de données correspondantes
+                if (articlesHtml[i].Contains("[replace td vertical-align]"))
+                {
+                    articlesHtml[i] = articlesHtml[i].Replace("[replace td vertical-align]", "");
+                    htmltable = htmltable.Replace($"<td id=\"{i}\"></td>", $"<td class=\"vertical-align-middle\" id=\"{i}\">{articlesHtml[i]}</td>");
+                    continue;
+                }
                 htmltable = htmltable.Replace($"<td id=\"{i}\"></td>", $"<td id=\"{i}\">{articlesHtml[i]}</td>");
             }
 
@@ -188,9 +194,9 @@ namespace MadininApp.Services
             foreach (var article in lastArticles)
             {
                 var htmlImage = string.IsNullOrEmpty(article.ImageUrl) ? "" : $"<img src=\"{article.ImageUrl}\">";
-                string classe = positionBasLettre == "en dessous" ? "footer-element" : "article";
+                string classe = positionBasLettre == "en dessous" ? "footer-element" : "article-fin-lettre";
                 
-                lastArticlesHtml.Append($"<div class=\"{classe}\"><h4>{article.Category}</h4><h2><a href={article.MadinUrl}>{article.Title}</a></h2><h3>{article.Author}</h3>{htmlImage}<p>{article.HtmlContent}</p></div>");
+                lastArticlesHtml.Append($"[replace td vertical-align]<div class=\"{classe}\"><h4>{article.Category}</h4><h2><a href={article.MadinUrl}>{article.Title}</a></h2><h3>{article.Author}</h3>{htmlImage}<p>{article.HtmlContent}</p></div>");
             }
 
             
@@ -269,7 +275,7 @@ namespace MadininApp.Services
 
             if(positionBasLettre == "en dessous")
             {
-                htmlTemplate = htmlTemplate.Replace("<!--footer element here-->", lastArticlesHtml.ToString());
+                htmlTemplate = htmlTemplate.Replace("<!--footer element here-->", lastArticlesHtml.Replace("[replace td vertical-align]", "").ToString());
             }
             // Sauvegarder le fichier HTML résultant
             File.WriteAllText(_outputPath, htmlTemplate);
