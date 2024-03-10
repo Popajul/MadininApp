@@ -23,6 +23,7 @@ namespace MadininApp.Objects
             {
                 IsPlaceHolder = true,
                 Title = "",
+                Subtitle="",
                 Content = "",
                 Date = "",
                 Author = "",
@@ -33,7 +34,8 @@ namespace MadininApp.Objects
                 IsTopArticle = false,
                 IsChecked = true,
                 Category = "",
-                Categories = new List<Category>()
+                Categories = new List<Category>(),
+                IsGeneratedArticle = false
 
             };
 
@@ -45,10 +47,13 @@ namespace MadininApp.Objects
         public IEnumerable<Category> Categories { get; set; }
         public string Date { get; set; }
         public string Title { get; set; }
+        public string Subtitle { get; set; }
         public string Author { get; set; }
         public string ImageUrl { get; set; }
         public string HtmlContent { get; set; }
         public bool IsActualite { get => Title?.Contains("Actualités") ?? false; }
+        public bool IsGeneratedArticle {get;set;} 
+
         private bool _isTopArticle;
         public bool IsTopArticle
         {

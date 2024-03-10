@@ -22,13 +22,42 @@
             margin-bottom: 10px;
         }
 
-            .lienLettre a {
-                font-family: Verdana, sans-serif;
-                font-size: 16px;
-                font-weight: 700;
-                color: white;
-                text-decoration: none;
-            }
+        .lienLettre a {
+            font-family: Verdana, sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        a:hover:not(.nav-bar a,.lienLettre a) {
+            background-color: #F8F8F1;
+            color: #4B3621;
+        }
+
+        .read-more:hover {
+            font-size: 12.2pt;
+        }
+
+        .nav-bar a:hover {
+            color: #F7FF3C !important;
+        }
+
+        .actualite p span a:hover, .actualite p a:hover,discret-link {
+            color: #4B3621 !important;
+            font-size: 12.1pt !important;
+        }
+
+       
+
+        .header:hover {
+            border: 2px solid #F7FF3C;
+        }
+
+        .lienLettre a:hover {
+            color: #F7FF3C !important;
+        }
+
 
         .container {
             margin: auto;
@@ -40,6 +69,7 @@
         }
 
         .header {
+            border: 2px solid transparent;
             text-align: center;
         }
 
@@ -162,40 +192,37 @@
                 color: black;
             }
 
-            .article p, .article span {
+            .article p, .article span, .article p span {
                 font-family: Verdana, sans-serif;
                 font-size: 12pt !important;
                 color: black;
                 text-align: justify;
             }
 
-            .article p span {
-                font-size: 12pt !important;
+
+            .actualite p a:not(.read-more), .article div p span a, .discret-link {
+                text-decoration: none;
+                font-family: Verdana, sans-serif;
+                font-size: 12pt;
+                color: black;
             }
 
-        .actualite p a:not(.read-more), .article div p span a {
-            text-decoration: none;
-            font-family: Verdana, sans-serif;
-            font-size: 16px;
-            color: black;
-        }
-
-        .actualite span, .actualite strong span, .article div p span a {
-            font-family: Verdana, sans-serif !important;
-            font-size: 16px !important;
-            color: black !important;
-        }
-
-            .actualite p a:not(.read-more)::before, .article div p span a::before {
-                content: '• '; /* Symbole de la puce */
-                color: #000; /* Couleur de la puce, ajustez selon vos besoins */
-                font-size: 1em; /* Taille de la puce, ajustez selon vos besoins */
-                padding-right: 0.5em; /* Espace entre la puce et le texte du lien */
+            .actualite span, .actualite strong span, .article div p span a, .discret-link {
+                font-family: Verdana, sans-serif !important;
+                font-size: 16px !important;
+                color: black !important;
             }
 
-        .actualite p a span strong span, .article div p span a {
-            font-weight: normal;
-        }
+                .actualite p a:not(.read-more)::before, .article div p span a::before, .discret-link::before {
+                    content: '• '; /* Symbole de la puce */
+                    color: #000; /* Couleur de la puce, ajustez selon vos besoins */
+                    font-size: 1em; /* Taille de la puce, ajustez selon vos besoins */
+                    padding-right: 0.5em; /* Espace entre la puce et le texte du lien */
+                }
+
+            .actualite p a span strong span, .article div p span a, .discret-link {
+                font-weight: normal;
+            }
 
 
 

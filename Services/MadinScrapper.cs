@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
@@ -148,6 +149,12 @@ namespace MadininApp.Services
                 // Content
                 var contentNode = node.SelectSingleNode($"(.//*[contains(concat(' ', normalize-space(@class), ' '), ' entry-content ')])");
                 var content = contentNode == null ? "" : HtmlEntity.DeEntitize(contentNode.InnerText).Trim();
+
+                // Subtitle premier span de entry-content
+                var firstSpan = contentNode?.SelectSingleNode(".//span");
+                var subtitle = firstSpan == null ? "" : HtmlEntity.DeEntitize(firstSpan.InnerText).Trim();
+
+
                 // Image
                 var imgNode = contentNode?.SelectSingleNode($"(.//div[@class='excerpt']//img)");
                 var src = imgNode?.GetAttributeValue("src", string.Empty) ?? "";
@@ -189,7 +196,12 @@ namespace MadininApp.Services
                         Title = title,
                         ImageUrl = src,
                         Author = author,
-                        MadinUrl = madinUrl
+                        MadinUrl = madinUrl,
+                        IsTopArticle = false,
+                        IsChecked = false,
+                        IsGeneratedArticle = false,
+                        IsPlaceHolder = false,
+                        Subtitle = subtitle
                     });
             }
             var topArticle = madinArticles.First();
@@ -197,67 +209,14 @@ namespace MadininApp.Services
             topArticle.IsTopArticle = true;
             topArticle.IsChecked = true;
 
-            // On génére l'article chroniques de Jean-Marie-Nol et l'article Politique
-            var template = "<p><span><a href=\"[MadinUrl]\">[Title]</a></span></p>";
-            var JMArticles = madinArticles.Where(a => a.Category.Contains("Les chroniques de Jean-Marie Nol")).Select(a => new { title = a.Title, url = a.MadinUrl, image = a.ImageUrl }).ToList();
-            var politiqueArticles = madinArticles.Where(a => a.Category == "Politiques").Select(a => new { title = a.Title, url = a.MadinUrl, image = a.ImageUrl }).ToList();
-
-            MadinArticle JMArticle = null;
-            if(JMArticles.Count >= 3)
-            {
-                JMArticle = new MadinArticle()
-                {
-                    Title = "Les chroniques de Jean-Marie Nol",
-                    Category = "",
-                    MadinUrl = "https://www.madinin-art.net/cat/sciences_sociales/economie/les-chroniques-de-jean-marie-nol/",
-                    ImageUrl = JMArticles.FirstOrDefault()?.image,
-                    IsTopArticle = false,
-                    IsPlaceHolder = false,
-                };
-            }
-
-            MadinArticle politicArticle = null;
-            if (politiqueArticles.Count >= 3)
-            {
-                politicArticle = new MadinArticle()
-                {
-                    Title = "Politiques",
-                    Category = "",
-                    MadinUrl = "https://www.madinin-art.net/cat/sciences_sociales/politiques/",
-                    ImageUrl = politiqueArticles.FirstOrDefault()?.image,
-                    IsTopArticle = false,
-                    IsPlaceHolder = false,
-                };
-            }
-
-            if(JMArticle != null)
-            {
-                JMArticle.HtmlContent = "<div>";
-                foreach (var article in JMArticles)
-                {
-                    JMArticle.HtmlContent += template.Replace("[MadinUrl]", article.url).Replace("[Title]", article.title);
-                }
-                JMArticle.HtmlContent += "</div>";
-                madinArticles.Add(JMArticle);
-            }
-
-            if (politicArticle != null)
-            {
-                politicArticle.HtmlContent = "<div>";
-                foreach (var article in politiqueArticles)
-                {
-                    politicArticle.HtmlContent += template.Replace("[MadinUrl]", article.url).Replace("[Title]", article.title);
-                }
-                politicArticle.HtmlContent += "</div>";
-                madinArticles.Add(politicArticle);
-            }
-
+            var generatedArticles = GenerateMadinArticle(madinArticles);
+            madinArticles.AddRange(generatedArticles);
             // On ne garde pas les articles de category Yekri
             // On supprime les doublons basé sur le titre
             // On ordonne par catégory
             var articlesSansCategory = madinArticles.Where(a => string.IsNullOrWhiteSpace(a.Category)).ToList();
             var articleAvecCategory = madinArticles.Where(a => !string.IsNullOrWhiteSpace(a.Category)).ToList();
-            var filteredArticles = articleAvecCategory.Where(a => !a.Category.Contains("Yékri")).GroupBy(art => art.Title).Select(g => g.First()).Where(a=>a.Title != topArticle.Title).GroupBy(a => a.Category).SelectMany(g => g).ToList();
+            var filteredArticles = articleAvecCategory.Where(a => !a.Category.Contains("Yékri")).GroupBy(art => art.Title).Select(g => g.First()).Where(a => a.Title != topArticle.Title).GroupBy(a => a.Category).SelectMany(g => g).ToList();
 
             var result = new List<MadinArticle>();
             var firstArticle = filteredArticles.First();
@@ -291,7 +250,7 @@ namespace MadininApp.Services
             result.AddRange(articlesSansCategory);
             result.Insert(0, topArticle);
 
-             
+
             return result;
         }
         /// <summary>
@@ -364,6 +323,91 @@ namespace MadininApp.Services
                     link.Remove();
                 }
             }
+        }
+
+        private class GeneratedArticleBuilder
+        {
+            public string Title { get; set; }
+            public string ImageUrl { get; set; }
+            public string MadinUrl { get; set; }
+            public Predicate<MadinArticle> SelectorPredicate { get; set; }
+        }
+        private static List<MadinArticle> GenerateMadinArticle(List<MadinArticle> unfilteredArticle)
+        {
+
+            List<MadinArticle> madinArticlesGenerated = new List<MadinArticle>();
+            var contentTemplate = "<p class=\"generated-line\"><span><a class=\"discret-link\" href=\"[MadinUrl]\">[Title]</a></span></p>";
+
+
+            List<GeneratedArticleBuilder> builders = new List<GeneratedArticleBuilder>()
+            {
+                    new GeneratedArticleBuilder()
+                    {
+                        Title = "Nos belles éphémérides",
+                        ImageUrl = "https://www.madinin-art.net/images/les_ephemerides.jpg",
+                        MadinUrl = "https://www.madinin-art.net/cat/yekri/",
+                        SelectorPredicate = a => (a.Category.Contains("Yékri") && a.Title.Contains("éphéméride"))
+                    },
+                    new GeneratedArticleBuilder() 
+                    {
+                        Title="Les chroniques de J-M Nol",
+                        ImageUrl = "https://www.madinin-art.net/wp-content/uploads/2024/03/cat_chroniques_de_J-M_Nol.jpg",
+                        MadinUrl = "https://www.madinin-art.net/cat/sciences_sociales/economie/les-chroniques-de-jean-marie-nol/",
+                        SelectorPredicate = a=> a.Category.Contains("Les chroniques de Jean-Marie Nol")
+                    },
+                    new GeneratedArticleBuilder()
+                    {
+                        Title="Politiques",
+                        ImageUrl = "https://www.madinin-art.net/wp-content/uploads/2018/10/debattre.jpg",
+                        MadinUrl = "https://www.madinin-art.net/cat/politiques/",
+                        SelectorPredicate = a=> a.Category == "Politiques"
+                    }
+
+
+
+            };
+           
+
+            foreach (var builder in builders)
+            {
+                var title = builder.Title;
+                var imageUrl = builder.ImageUrl;
+                var madinUrl = builder.MadinUrl;
+                var predicate = builder.SelectorPredicate;
+                var articles = unfilteredArticle.Where(a => predicate(a));
+
+                var titles = new List<(string, string,string)>();
+                if (title == "Nos belles éphémérides")
+                {
+                    titles = articles.Select(a => (a.MadinUrl, Title: a.Subtitle, a.Author)).Where(a => !string.IsNullOrWhiteSpace(a.Title)).ToList();
+                }
+                else
+                {
+                    titles = articles.Select(a => (a.MadinUrl, a.Title, a.Author)).Where(s => !string.IsNullOrWhiteSpace(s.Title)).ToList();
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (var t in titles)
+                {
+                    var ligne = String.IsNullOrWhiteSpace(t.Item3) ? t.Item2 : t.Item2 + " - " + (t.Item3.Contains("Par") ? "" : builder.Title =="Les chroniques de J-M Nol" ? "" : "Par") + t.Item3;
+                    stringBuilder.AppendLine(contentTemplate.Replace("[MadinUrl]", t.Item1).Replace("[Title]", ligne));
+                   
+                }
+                var generatedArticle = new MadinArticle()
+                {
+                    Title = title,
+                    Category = "",
+                    MadinUrl = madinUrl,
+                    ImageUrl = imageUrl,
+                    IsTopArticle = false,
+                    IsPlaceHolder = false,
+                    IsGeneratedArticle = true,
+                    HtmlContent = stringBuilder.ToString()
+                };
+
+                madinArticlesGenerated.Add(generatedArticle);
+            }
+            return madinArticlesGenerated;
         }
     }
 }
