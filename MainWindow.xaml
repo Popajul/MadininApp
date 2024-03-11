@@ -8,183 +8,211 @@
         WindowState="Maximized">
 
     <!--Couleur de fond de la fenêtre -->
+
     <Window.Background>
-        <SolidColorBrush Color="White" />
+        <ImageBrush ImageSource="\Images\istockphoto-1336797294-612x612.jpg" Opacity="0.35"/>
     </Window.Background>
+    <Window.Resources>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Background" Value="WhiteSmoke"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#a99785"/>
+                                <!-- Couleur de survol -->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Border BorderBrush="#f2a81f"  BorderThickness="0.5,0.5,0.5,5">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <!-- Conteneur principal -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10" />
+                    <!--Marge-->
+                    <RowDefinition Height="{Binding MaxHeight}" />
+                    <!--Articles-->
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <!--Marge-->
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <!-- Marge-->
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Premiere Colonne-->
+                    <ColumnDefinition Width="*" />
+                    <!--Marge-->
+                    <ColumnDefinition Width="Auto" />
+                    <!--Deuxieme Colonne-->
+                    <ColumnDefinition Width="*" />
+                    <!--Marge-->
+                    <ColumnDefinition Width="Auto" />
+                    <!--Troisieme Colonne-->
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <!--Colonne 1 Top Article , Ordre des Categories et Logo-->
+                <StackPanel Grid.Column="1"  Grid.Row="1" Grid.RowSpan="1" Orientation="Horizontal" HorizontalAlignment="Center">
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <Grid>
-            <!-- Conteneur principal -->
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <!--Marge-->
-                <RowDefinition Height="{Binding MaxHeight}" />
-                <!--Articles-->
-                <RowDefinition Height="*" />
-                <!--Marge-->
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <!-- Marge-->
-                <ColumnDefinition Width="Auto" />
-                <!-- Premiere Colonne-->
-                <ColumnDefinition Width="*" />
-                <!--Marge-->
-                <ColumnDefinition Width="Auto" />
-                <!--Deuxieme Colonne-->
-                <ColumnDefinition Width="*" />
-                <!--Marge-->
-                <ColumnDefinition Width="Auto" />
-                <!--Troisieme Colonne-->
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
 
-            <!--Colonne 1 Top Article , Ordre des Categories et Logo-->
-            <StackPanel Grid.Column="1"  Grid.Row="1" Grid.RowSpan="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <RowDefinition Height="Auto"/>
+                            <!--Top Article-->
+                            <RowDefinition Height="*"/>
+                            <!--Marge-->
+                            <RowDefinition Height="Auto"/>
+                            <!--Categories-->
+                            <RowDefinition Height="*"/>
+                            <!--Marge-->
+                            <RowDefinition Height="2*"/>
+                            <!--Logo-->
+                            <RowDefinition Height="1*"/>
+                            <!--Marge-->
 
-                <Grid>
-                    <Grid.RowDefinitions>
+                        </Grid.RowDefinitions>
 
-                        <RowDefinition Height="Auto"/>
-                        <!--Top Article-->
-                        <RowDefinition Height="*"/>
-                        <!--Marge-->
-                        <RowDefinition Height="Auto"/>
-                        <!--Categories-->
-                        <RowDefinition Height="*"/>
-                        <!--Marge-->
-                        <RowDefinition Height="2*"/>
-                        <!--Logo-->
-                        <RowDefinition Height="1*"/>
-                        <!--Marge-->
+                        <Border Background="WhiteSmoke" MaxWidth="300" Grid.Row="0" BorderBrush="#f2a81f" BorderThickness="3,0,0,0" Opacity="0.8">
+                            <StackPanel >
 
-                    </Grid.RowDefinitions>
+                                <TextBlock  Text="TOP ARTICLE" HorizontalAlignment="Center" Foreground="#7f674e" />
+                                <TextBlock  Text="{Binding TopArticle.Title}" TextWrapping="Wrap" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                <Image   Source="{Binding TopArticle.ImageUrl}" Height="100" Stretch="Uniform" MaxWidth="200"/>
 
-                    <Border Background="WhiteSmoke" MaxWidth="300" Grid.Row="0" BorderBrush="LightGray" BorderThickness="1">
-                        <StackPanel >
+                            </StackPanel>
+                        </Border>
 
-                            <TextBlock  Text="TOP ARTICLE" HorizontalAlignment="Center"/>
-                            <TextBlock  Text="{Binding TopArticle.Title}" TextWrapping="Wrap" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
-                            <Image   Source="{Binding TopArticle.ImageUrl}" Height="100" Stretch="Uniform" MaxWidth="200"/>
-
-                        </StackPanel>
-                    </Border>
-
-                    <Border Grid.Row="2" Background="WhiteSmoke" Width="350" BorderBrush="LightGray"  BorderThickness="1">
-                        <StackPanel >
-                            <TextBlock  Text="ORDRE DES CATEGORIES" HorizontalAlignment="Center"/>
-                            <ListBox  x:Name="CategoriesListBox" MaxHeight="{Binding MaxCatHeight}"
+                        <Border Grid.Row="2" Background="WhiteSmoke" Width="350" BorderBrush="#f2a81f"  BorderThickness="3,0,0,0" Opacity="0.8">
+                            <StackPanel >
+                                <TextBlock  Text="ORDRE DES CATEGORIES" HorizontalAlignment="Center" Foreground="#7f674e"/>
+                                <ListBox  x:Name="CategoriesListBox" MaxHeight="{Binding MaxCatHeight}"
                          ItemsSource="{Binding Categories}"
                          PreviewKeyDown="CategoriesListBox_PreviewKeyDown" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" ScrollViewer.PanningMode="VerticalOnly"
-                                      BorderThickness="0">
+                                      BorderThickness="0" Foreground="Black">
 
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Vertical"/>
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
-                            </ListBox>
-                            <local:Button1 Button1Content="Appliquer l'ordre choisi" ButtonClick="OnOrderCategoryChanged" Margin="5"/>
-                        </StackPanel>
-                    </Border>
-                    <!-- Image header-->
-                    <Image Grid.Row="4" Source="https://www.madinin-art.net/images/logo_la_lettre_blanc.jpg" MaxWidth="300"></Image>
-                </Grid>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Vertical"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                </ListBox>
+                                <local:Button1 Button1Content="Appliquer l'ordre choisi" ButtonClick="OnOrderCategoryChanged" Margin="5"/>
+                            </StackPanel>
+                        </Border>
 
-            </StackPanel>
+                    </Grid>
 
-            <!--Colonne 2 Scrolling Articles-->
-            <StackPanel Grid.Column="3" Grid.Row="1" Height="Auto">
-                <!-- Action sur l'affichage des tuiles articles-->
-                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                    <CheckBox  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Center" IsChecked="false" Margin="5">Reduire toutes les tuiles</CheckBox>
-                    <CheckBox  Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Center" Margin="5">Tout selectionner</CheckBox>
                 </StackPanel>
-                <Border BorderBrush="LightGray" BorderThickness="1">
-
-                    <ScrollViewer   VerticalScrollBarVisibility="Auto" PreviewDragOver="ScrollViewer_PreviewDragOver" MaxHeight="{Binding MaxArticlesScrollHeight}">
 
 
-                        <StackPanel x:Name="myStackPanel" Background="White" Visibility="Visible">
-                            <ItemsControl x:Name="myStackItemsControl" ItemsSource="{Binding OtherArticles}" Width="450">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="2"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-
-                                        <local:Tuile Article="{Binding}"/>
-
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-
-                    </ScrollViewer>
-                </Border>
-                
-                <Border BorderBrush="LightGray" BorderThickness="1">
-                    <ScrollViewer   VerticalScrollBarVisibility="Auto" PreviewDragOver="ScrollViewer_PreviewDragOver" MaxHeight="{Binding MaxArticlesScrollHeight}">
-                        <WrapPanel x:Name="myWrapPanel" Background="White" Visibility="Collapsed"  MaxHeight="{Binding MaxArticlesScrollHeight}">
-                            <ItemsControl x:Name="myWrapItemsControl" ItemsSource="{Binding OtherArticles}" Width="450">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="2"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-
-                                        <local:Tuile Article="{Binding}"/>
-
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </WrapPanel>
-                    </ScrollViewer>
-                </Border>
-            </StackPanel>
-
-
-            <!-- Colonne 3 divers boutons -->
-            <Grid Grid.Column ="5" Grid.Row="1" Grid.ColumnSpan="1" MaxWidth="300" MinWidth="250">
-
-
-
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" >
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                        <local:Button1  Button1Content="Supprimer les articles non selectionnés" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
-                        <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
-                        <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                <!--Colonne 2 Scrolling Articles-->
+                <StackPanel Grid.Column="3" Grid.Row="1" Height="Auto">
+                    <!-- Action sur l'affichage des tuiles articles-->
+                    <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                        <CheckBox  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Center" IsChecked="false" Margin="5" Foreground="yellow">Reduire toutes les tuiles</CheckBox>
+                        <CheckBox  Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Center" Margin="5" Foreground="yellow">Tout selectionner</CheckBox>
                     </StackPanel>
-                    <Border Background="WhiteSmoke" Margin="10" Width="Auto" BorderBrush="LightGray"  BorderThickness="1">
+                    <Border BorderBrush="#f2a81f" BorderThickness="0,4,0,0" Opacity="0.85" >
 
-                        <StackPanel x:Name="PositionLettreStackPanel" Orientation="Vertical" Width="Auto"  >
-                            <Label  Content="Placement du texte de fin de lettre" Height="25" Width="Auto" HorizontalAlignment="Center"/>
-                            <RadioButton Content="en dessous" GroupName="PositionFinLettre" IsChecked="True" HorizontalAlignment="Stretch" Width="200"/>
-                            <RadioButton Content="à droite" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                            <RadioButton Content="à gauche" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                            <RadioButton Content="à droite séparé de l'article techno" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                        </StackPanel>
+                        <ScrollViewer   VerticalScrollBarVisibility="Auto" PreviewDragOver="ScrollViewer_PreviewDragOver" MaxHeight="{Binding MaxArticlesScrollHeight}">
 
+
+                            <StackPanel x:Name="myStackPanel" Background="WhiteSmoke" Visibility="Visible">
+                                <ItemsControl x:Name="myStackItemsControl" ItemsSource="{Binding OtherArticles}" Width="450">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="2"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+
+                                            <local:Tuile Article="{Binding}"/>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                        </ScrollViewer>
                     </Border>
 
-                    <TextBox  Margin="10" Text="CSS inline :&#x0a; https://premailer.dialect.ca/" TextWrapping="Wrap" HorizontalAlignment="Center" Width="200" AcceptsReturn="True" TextAlignment="Center" IsEnabled="False" BorderThickness="0" BorderBrush="Transparent">
+                    <Border BorderBrush="#f2a81f" BorderThickness="0,0,0,3" Opacity="0.85">
+                        <ScrollViewer   VerticalScrollBarVisibility="Auto" PreviewDragOver="ScrollViewer_PreviewDragOver" MaxHeight="{Binding MaxArticlesScrollHeight}">
+                            <WrapPanel x:Name="myWrapPanel" Background="WhiteSmoke" Visibility="Collapsed"  MaxHeight="{Binding MaxArticlesScrollHeight}">
+                                <ItemsControl x:Name="myWrapItemsControl" ItemsSource="{Binding OtherArticles}" Width="450">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="2"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
 
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Style.Triggers>
-                                    <Trigger Property="IsFocused" Value="True">
-                                        <Setter Property="Text" Value="" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                                            <local:Tuile Article="{Binding}"/>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </WrapPanel>
+                        </ScrollViewer>
+                    </Border>
                 </StackPanel>
+
+                <Image Grid.Column="5" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"  Source="https://www.madinin-art.net/images/logo_la_lettre_blanc.jpg" MaxWidth="500" VerticalAlignment="Top" Opacity="0.5"></Image>
+                <!-- Colonne 3 divers boutons -->
+                <Grid Grid.Column ="5" Grid.Row="1" Grid.ColumnSpan="1" MaxWidth="300" MinWidth="250" Opacity="0.8">
+
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" >
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                            <local:Button1  Button1Content="Supprimer les articles non selectionnés" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                            <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                            <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                        </StackPanel>
+                        <Border Background="WhiteSmoke" Margin="10" Width="Auto" BorderBrush="#f2a81f"  BorderThickness="3,0,0,0">
+
+                            <StackPanel x:Name="PositionLettreStackPanel" Orientation="Vertical" Width="Auto">
+                                <Label  Content="Placement du texte de fin de lettre" Height="25" Width="Auto" HorizontalAlignment="Center" Foreground="#7f674e"/>
+                                <RadioButton Content="en dessous" GroupName="PositionFinLettre" IsChecked="True" HorizontalAlignment="Stretch" Width="200" Foreground="#7f674e"/>
+                                <RadioButton Content="à droite" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200" Foreground="#7f674e"/>
+                                <RadioButton Content="à gauche" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200" Foreground="#7f674e"/>
+                                <RadioButton Content="à droite séparé de l'article techno" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200" Foreground="#7f674e"/>
+                            </StackPanel>
+
+                        </Border>
+
+                        <TextBox  Margin="10" Text="CSS inline :&#x0a; https://premailer.dialect.ca/" TextWrapping="Wrap" HorizontalAlignment="Center" Width="200" AcceptsReturn="True" TextAlignment="Center" IsEnabled="False" BorderThickness="0" BorderBrush="Transparent">
+
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter Property="Text" Value="" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </StackPanel>
+                </Grid>
             </Grid>
-        </Grid>
-    </ScrollViewer>
+        </ScrollViewer>
+    </Border>
 </Window>
