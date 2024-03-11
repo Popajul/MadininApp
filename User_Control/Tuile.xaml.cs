@@ -17,6 +17,7 @@ namespace MadininApp.User_Control
         // DependencyProperty pour Data
         public static readonly DependencyProperty ArticleProperty =
             DependencyProperty.Register("Article", typeof(MadinArticle), typeof(Tuile), new PropertyMetadata(null));
+
         public MadinArticle Article
         {
             get { return (MadinArticle)GetValue(ArticleProperty); }

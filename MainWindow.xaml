@@ -97,14 +97,16 @@
             <StackPanel Grid.Column="3" Grid.Row="1" Height="Auto">
                 <!-- Action sur l'affichage des tuiles articles-->
                 <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                    <CheckBox  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Center" IsChecked="true" Margin="5">images</CheckBox>
+                    <CheckBox  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Center" IsChecked="false" Margin="5">Reduire toutes les tuiles</CheckBox>
                     <CheckBox  Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Center" Margin="5">Tout selectionner</CheckBox>
                 </StackPanel>
                 <Border BorderBrush="LightGray" BorderThickness="1">
+
                     <ScrollViewer   VerticalScrollBarVisibility="Auto" PreviewDragOver="ScrollViewer_PreviewDragOver" MaxHeight="{Binding MaxArticlesScrollHeight}">
 
-                        <StackPanel Background="White">
-                            <ItemsControl x:Name="myItemsControl" ItemsSource="{Binding OtherArticles}" Width="450">
+
+                        <StackPanel x:Name="myStackPanel" Background="White" Visibility="Visible">
+                            <ItemsControl x:Name="myStackItemsControl" ItemsSource="{Binding OtherArticles}" Width="450">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Columns="2"/>
@@ -122,9 +124,28 @@
 
                     </ScrollViewer>
                 </Border>
+                
+                <Border BorderBrush="LightGray" BorderThickness="1">
+                    <ScrollViewer   VerticalScrollBarVisibility="Auto" PreviewDragOver="ScrollViewer_PreviewDragOver" MaxHeight="{Binding MaxArticlesScrollHeight}">
+                        <WrapPanel x:Name="myWrapPanel" Background="White" Visibility="Collapsed"  MaxHeight="{Binding MaxArticlesScrollHeight}">
+                            <ItemsControl x:Name="myWrapItemsControl" ItemsSource="{Binding OtherArticles}" Width="450">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="2"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+
+                                        <local:Tuile Article="{Binding}"/>
+
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </WrapPanel>
+                    </ScrollViewer>
+                </Border>
             </StackPanel>
-
-
 
 
             <!-- Colonne 3 divers boutons -->
@@ -132,11 +153,11 @@
 
 
 
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" >
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <local:Button1  Button1Content="Supprimer les articles non selectionnés" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
-                        <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
-                        <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" >
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                        <local:Button1  Button1Content="Supprimer les articles non selectionnés" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                        <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                        <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
                     </StackPanel>
                     <Border Background="WhiteSmoke" Margin="10" Width="Auto" BorderBrush="LightGray"  BorderThickness="1">
 

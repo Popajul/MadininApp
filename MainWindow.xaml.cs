@@ -48,18 +48,36 @@ namespace MadininApp
         {
             DataContext = Model;
             InitializeComponent();
-            myItemsControl.Loaded += MyItemsControl_Loaded;
+            myStackItemsControl.Loaded += MyItemsControl_Loaded;
+            myWrapItemsControl.Loaded += MyItemsControl_Loaded;
+            
 
         }
 
         private void UpdateTuileDroppedEventSubscription()
         {
-            myItemsControl.UpdateLayout();
-
-            foreach (var item in myItemsControl.Items)
+            myStackItemsControl.UpdateLayout();
+            myWrapItemsControl.UpdateLayout();
+            foreach (var item in myStackItemsControl.Items)
             {
                 // Obtenir le conteneur d'éléments pour l'item actuel
-                var container = myItemsControl.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+                var container = myStackItemsControl.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+                if (container != null)
+                {
+                    // Trouver l'instance de Tuile à l'intérieur du conteneur d'éléments
+                    Tuile tuile = VisualTreeHelperExtensions.FindVisualChild<Tuile>(container);
+                    if (tuile != null)
+                    {
+
+                        tuile.TuileDropped -= Tuile_TuileDropped;
+                        tuile.TuileDropped += Tuile_TuileDropped;
+                    }
+                }
+            }
+            foreach (var item in myWrapItemsControl.Items)
+            {
+                // Obtenir le conteneur d'éléments pour l'item actuel
+                var container = myWrapItemsControl.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
                 if (container != null)
                 {
                     // Trouver l'instance de Tuile à l'intérieur du conteneur d'éléments
@@ -392,18 +410,39 @@ namespace MadininApp
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            foreach (var item in Model.OtherArticles)
+            foreach (var art in Model.OtherArticles)
             {
-                item.ImageVisibility = Visibility.Collapsed;
+                art.ImageVisibility = Visibility.Visible;
             }
+            SwitchPanel(sender, e);
+            
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            foreach (var item in Model.OtherArticles)
+            foreach (var art in Model.OtherArticles)
             {
-                item.ImageVisibility = Visibility.Visible;
+                art.ImageVisibility = Visibility.Collapsed;
             }
+            SwitchPanel(sender, e);
+        }
+
+        private void SwitchPanel(object sender, RoutedEventArgs e)
+        {
+            // Basculer entre StackPanel et WrapPanel
+            if (myWrapPanel == null || myStackPanel == null)
+                return;
+            if (myWrapPanel.Visibility == Visibility.Visible)
+            {
+                myWrapPanel.Visibility = Visibility.Collapsed;
+                myStackPanel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                myWrapPanel.Visibility = Visibility.Visible;
+                myStackPanel.Visibility = Visibility.Collapsed;
+            }
+            UpdateLayout();
         }
     }
 

@@ -9,24 +9,28 @@
              MouseMove="Control_MouseMove"
              AllowDrop="True" Drop="Tuile_Drop">
 
+    <UserControl.Resources>
+        <Style TargetType="Border" x:Key="TuileStyle">
+            <Setter Property="Background" Value="WhiteSmoke"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True" >
+                    <Setter Property="Background" Value="Goldenrod"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
 
-    <Border Padding="1" Background="WhiteSmoke" BorderThickness="1" CornerRadius="10">
+    <Border Style="{StaticResource TuileStyle}" Padding="1"  BorderThickness="1" CornerRadius="10">
         <StackPanel>
             <!-- Partie toujours visible -->
             <Grid x:Name="tileGrid">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="180" />
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="5"/>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="Auto" />
+
                 </Grid.RowDefinitions>
-                <!-- ToggleButton pour l'expansion -->
-                <local:Button1 Grid.Row="0" Button1Content="Voir plus" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top"  ButtonClick="OpenPopup_Click">
-                </local:Button1>
+
                 <Popup Name="myPopup" Placement="Center" AllowsTransparency="True" PopupAnimation="Fade">
 
                     <Border Background="White" BorderBrush="Black" BorderThickness="1" Padding="10">
@@ -37,18 +41,29 @@
                     </Border>
 
                 </Popup>
-                <TextBlock Grid.Row="0" Text="{Binding Category}" FontSize="10" FontStyle="Italic" HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="100"/>
-                <TextBlock Grid.Row="1" Text="{Binding Author}" TextWrapping="Wrap" FontSize="12" Foreground="Red" HorizontalAlignment="Center" MaxHeight="15px"/>
-                <TextBlock Grid.Row="2" Text="{Binding Title}" TextWrapping="Wrap" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" MaxHeight="45px" />
-                <Image Grid.Row="4" Source="{Binding ImageUrl}" Height="80" Stretch="Uniform" Visibility="{Binding ImageVisibility}"/>
+                <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="1" Text="{Binding Category}" FontSize="10" FontStyle="Italic" HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="80" Visibility="{Binding ImageVisibility}"/>
+                    <TextBlock Grid.Row="1" Text="{Binding Author}" TextWrapping="Wrap" FontSize="12" Foreground="Red" HorizontalAlignment="Right" MaxHeight="50px" MaxWidth="140" Visibility="{Binding ImageVisibility}"/>
 
-                <Grid Grid.Row ="7" Grid.RowSpan="2">
+                    <TextBlock Grid.Row="0" Text="{Binding Title}" TextWrapping="Wrap" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" MaxHeight="45px" />
+
+                    <Image Grid.Row="4" Source="{Binding ImageUrl}" Height="80" Stretch="Uniform" Visibility="{Binding ImageVisibility}"/>
+                </Grid>
+
+
+                <Grid Grid.Row ="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <CheckBox Grid.Column="1"  IsChecked="{Binding IsChecked, Mode=TwoWay}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="4">
+                    <CheckBox Grid.Column="1"   IsChecked="{Binding IsChecked, Mode=TwoWay}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="4" Visibility="{Binding ImageVisibility}">
                         <CheckBox.Template>
                             <ControlTemplate TargetType="CheckBox">
                                 <StackPanel Orientation="Horizontal">
@@ -69,9 +84,10 @@
                         </CheckBox.Template>
                     </CheckBox>
                     <!-- RadioButton pour sélectionner l'article à la une -->
-                    <RadioButton  Grid.Column="0"  GroupName="ArticleALaUne" IsEnabled="{Binding IsNotPlaceHolder}"
+                    <RadioButton  Grid.Column="0"   GroupName="ArticleALaUne" IsEnabled="{Binding IsNotPlaceHolder}" Visibility="{Binding ImageVisibility}" VerticalAlignment="Bottom"
                              Content="Top"
                              IsChecked="{Binding IsTopArticle, Mode=TwoWay}"/>
+                    <local:Button1 Grid.Column="2"  Button1Content=" + " Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom"  ButtonClick="OpenPopup_Click"></local:Button1>
                 </Grid>
 
             </Grid>
