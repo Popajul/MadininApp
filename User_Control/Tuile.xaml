@@ -37,7 +37,7 @@
                     </Border>
 
                 </Popup>
-                <TextBlock Grid.Row="0" Text="{Binding Category}" FontSize="10" FontStyle="Italic" HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="150"/>
+                <TextBlock Grid.Row="0" Text="{Binding Category}" FontSize="10" FontStyle="Italic" HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="100"/>
                 <TextBlock Grid.Row="1" Text="{Binding Author}" TextWrapping="Wrap" FontSize="12" Foreground="Red" HorizontalAlignment="Center" MaxHeight="15px"/>
                 <TextBlock Grid.Row="2" Text="{Binding Title}" TextWrapping="Wrap" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" MaxHeight="45px" />
                 <Image Grid.Row="4" Source="{Binding ImageUrl}" Height="80" Stretch="Uniform" Visibility="{Binding ImageVisibility}"/>

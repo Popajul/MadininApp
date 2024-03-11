@@ -12,146 +12,158 @@
         <SolidColorBrush Color="White" />
     </Window.Background>
 
-
-    <Grid>
-        <!-- Conteneur principal -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100" />
-            <RowDefinition Height="50" />
-            <RowDefinition Height="100" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="350" />
-            <ColumnDefinition Width="25" />
-            <ColumnDefinition Width="15" />
-            <ColumnDefinition Width="550" />
-            <ColumnDefinition Width="15" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
-        <!-- Image header-->
-        <Image Grid.Column="2" Grid.ColumnSpan="4"  Grid.Row="0" Source="https://www.madinin-art.net/images/logo_la_lettre_blanc.jpg" MaxWidth="500"></Image>
-        <!--Top Article -->
-        <StackPanel Grid.Column="1"  Grid.Row="0" Grid.RowSpan="4" Orientation="Horizontal" HorizontalAlignment="Center">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Border Background="WhiteSmoke" Width="300" Grid.Row="0">
-                    <StackPanel >
-
-                        <TextBlock  Text="TOP ARTICLE" HorizontalAlignment="Center"/>
-                        <TextBlock  Text="{Binding TopArticle.Title}" TextWrapping="Wrap" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" MaxHeight="45px"/>
-                        <Image   Source="{Binding TopArticle.ImageUrl}" Height="100" Stretch="Uniform" MaxWidth="200"/>
-
-                    </StackPanel>
-                </Border>
-
-                <Border Background="WhiteSmoke" Width="350" Grid.Row="2">
-                    <StackPanel >
-                        <TextBlock  Text="ORDRE DES CATEGORIES" HorizontalAlignment="Center"/>
-                        <ListBox  x:Name="CategoriesListBox" MaxHeight="400"
-                         ItemsSource="{Binding Categories}"
-                         PreviewKeyDown="CategoriesListBox_PreviewKeyDown" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" ScrollViewer.PanningMode="VerticalOnly">
-
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Vertical"/>
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                        </ListBox>
-                        <local:Button1 Button1Content="VALIDER" ButtonClick="OnOrderCategoryChanged"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
-
-        </StackPanel>
-        <!--Scrolling-->
-        <!-- CheckBox alignée à gauche -->
-
-        <StackPanel Grid.Column="2" Grid.Row="1" Visibility="Hidden">
-            <Button Width="25" >-</Button>
-            <Button Width="25" >+</Button>
-        </StackPanel>
-
-        <ScrollViewer Grid.Column="4" Grid.Row="1" Grid.RowSpan="3" VerticalScrollBarVisibility="Auto" PreviewDragOver="ScrollViewer_PreviewDragOver">
-
-            <StackPanel Background="White">
-                <ItemsControl x:Name="myItemsControl" ItemsSource="{Binding OtherArticles}" Width="500">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="2"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-
-                            <local:Tuile Article="{Binding}"/>
-
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-
-        </ScrollViewer>
-
-
-
-        <!-- Bouton Valider et TiPawolAChef -->
-        <Grid Grid.Column ="6" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-
-            </Grid.ColumnDefinitions>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <!-- Conteneur principal -->
             <Grid.RowDefinitions>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-
+                <RowDefinition Height="*" />
+                <!--Marge-->
+                <RowDefinition Height="{Binding MaxHeight}" />
+                <!--Articles-->
+                <RowDefinition Height="*" />
+                <!--Marge-->
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="1" Grid.Column="1">
-                <CheckBox  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Left" IsChecked="true">images</CheckBox>
-                <CheckBox  Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Left">Tout selectionner</CheckBox>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <!-- Marge-->
+                <ColumnDefinition Width="Auto" />
+                <!-- Premiere Colonne-->
+                <ColumnDefinition Width="*" />
+                <!--Marge-->
+                <ColumnDefinition Width="Auto" />
+                <!--Deuxieme Colonne-->
+                <ColumnDefinition Width="*" />
+                <!--Marge-->
+                <ColumnDefinition Width="Auto" />
+                <!--Troisieme Colonne-->
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--Colonne 1 Top Article , Ordre des Categories et Logo-->
+            <StackPanel Grid.Column="1"  Grid.Row="1" Grid.RowSpan="1" Orientation="Horizontal" HorizontalAlignment="Center">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+
+                        <RowDefinition Height="Auto"/>
+                        <!--Top Article-->
+                        <RowDefinition Height="*"/>
+                        <!--Marge-->
+                        <RowDefinition Height="Auto"/>
+                        <!--Categories-->
+                        <RowDefinition Height="*"/>
+                        <!--Marge-->
+                        <RowDefinition Height="2*"/>
+                        <!--Logo-->
+                        <RowDefinition Height="1*"/>
+                        <!--Marge-->
+
+                    </Grid.RowDefinitions>
+
+                    <Border Background="WhiteSmoke" MaxWidth="300" Grid.Row="0" BorderBrush="LightGray" BorderThickness="1">
+                        <StackPanel >
+
+                            <TextBlock  Text="TOP ARTICLE" HorizontalAlignment="Center"/>
+                            <TextBlock  Text="{Binding TopArticle.Title}" TextWrapping="Wrap" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
+                            <Image   Source="{Binding TopArticle.ImageUrl}" Height="100" Stretch="Uniform" MaxWidth="200"/>
+
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="2" Background="WhiteSmoke" Width="350" BorderBrush="LightGray"  BorderThickness="1">
+                        <StackPanel >
+                            <TextBlock  Text="ORDRE DES CATEGORIES" HorizontalAlignment="Center"/>
+                            <ListBox  x:Name="CategoriesListBox" MaxHeight="{Binding MaxCatHeight}"
+                         ItemsSource="{Binding Categories}"
+                         PreviewKeyDown="CategoriesListBox_PreviewKeyDown" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" ScrollViewer.PanningMode="VerticalOnly"
+                                      BorderThickness="0">
+
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                            <local:Button1 Button1Content="Appliquer l'ordre choisi" ButtonClick="OnOrderCategoryChanged" Margin="5"/>
+                        </StackPanel>
+                    </Border>
+                    <!-- Image header-->
+                    <Image Grid.Row="4" Source="https://www.madinin-art.net/images/logo_la_lettre_blanc.jpg" MaxWidth="300"></Image>
+                </Grid>
+
             </StackPanel>
-            <StackPanel Grid.Row="3"  Grid.Column="1">
-                <local:Button1  Button1Content="Valider la sélection" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Center" Margin="10"/>
 
-                <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Center" Margin="10"/>
+            <!--Colonne 2 Scrolling Articles-->
+            <StackPanel Grid.Column="3" Grid.Row="1" Height="Auto">
+                <!-- Action sur l'affichage des tuiles articles-->
+                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                    <CheckBox  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Center" IsChecked="true" Margin="5">images</CheckBox>
+                    <CheckBox  Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Center" Margin="5">Tout selectionner</CheckBox>
+                </StackPanel>
+                <Border BorderBrush="LightGray" BorderThickness="1">
+                    <ScrollViewer   VerticalScrollBarVisibility="Auto" PreviewDragOver="ScrollViewer_PreviewDragOver" MaxHeight="{Binding MaxArticlesScrollHeight}">
 
-                <Border Background="WhiteSmoke" Margin="10" >
+                        <StackPanel Background="White">
+                            <ItemsControl x:Name="myItemsControl" ItemsSource="{Binding OtherArticles}" Width="450">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="2"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
 
-                    <StackPanel x:Name="PositionLettreStackPanel" Orientation="Vertical" Width="Auto"  >
-                        <Label  Content="Placement du texte de fin de lettre" Height="25" Width="200" HorizontalAlignment="Center"/>
-                        <RadioButton Content="en dessous" GroupName="PositionFinLettre" IsChecked="True" HorizontalAlignment="Stretch" Width="200"/>
-                        <RadioButton Content="à droite" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                        <RadioButton Content="à gauche" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                        <RadioButton Content="à droite séparé de l'article techno" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                    </StackPanel>
+                                        <local:Tuile Article="{Binding}"/>
 
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                    </ScrollViewer>
                 </Border>
-                <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Center" Margin="10"/>
-                <TextBox  Margin="10" Text="CSS inline :&#x0a; https://premailer.dialect.ca/" TextWrapping="Wrap" HorizontalAlignment="Center" Width="200" AcceptsReturn="True" TextAlignment="Center" IsEnabled="False" BorderThickness="0" BorderBrush="Transparent">
-
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="IsFocused" Value="True">
-                                    <Setter Property="Text" Value="" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
             </StackPanel>
+
+
+
+
+            <!-- Colonne 3 divers boutons -->
+            <Grid Grid.Column ="5" Grid.Row="1" Grid.ColumnSpan="1" MaxWidth="300" MinWidth="250">
+
+
+
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" >
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <local:Button1  Button1Content="Supprimer les articles non selectionnés" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
+                        <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
+                        <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
+                    </StackPanel>
+                    <Border Background="WhiteSmoke" Margin="10" Width="Auto" BorderBrush="LightGray"  BorderThickness="1">
+
+                        <StackPanel x:Name="PositionLettreStackPanel" Orientation="Vertical" Width="Auto"  >
+                            <Label  Content="Placement du texte de fin de lettre" Height="25" Width="Auto" HorizontalAlignment="Center"/>
+                            <RadioButton Content="en dessous" GroupName="PositionFinLettre" IsChecked="True" HorizontalAlignment="Stretch" Width="200"/>
+                            <RadioButton Content="à droite" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
+                            <RadioButton Content="à gauche" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
+                            <RadioButton Content="à droite séparé de l'article techno" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
+                        </StackPanel>
+
+                    </Border>
+
+                    <TextBox  Margin="10" Text="CSS inline :&#x0a; https://premailer.dialect.ca/" TextWrapping="Wrap" HorizontalAlignment="Center" Width="200" AcceptsReturn="True" TextAlignment="Center" IsEnabled="False" BorderThickness="0" BorderBrush="Transparent">
+
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Style.Triggers>
+                                    <Trigger Property="IsFocused" Value="True">
+                                        <Setter Property="Text" Value="" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </Window>

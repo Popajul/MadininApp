@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MadininApp.ViewModel
 {
@@ -95,6 +96,58 @@ namespace MadininApp.ViewModel
             {
                 _categories = value;
                 OnPropertyChanged(nameof(Categories));
+            }
+        }
+
+        private decimal _maxWidth => (decimal)SystemParameters.PrimaryScreenWidth;
+        public decimal MaxWidth 
+        {
+            get
+            {
+                return _maxWidth;
+            }
+            set 
+            { 
+                OnPropertyChanged(nameof(MaxWidth));
+            }
+        }
+
+        private decimal _maxHeight => (decimal)SystemParameters.PrimaryScreenHeight - 20;
+        public decimal MaxHeight
+        {
+            get
+            {
+                return _maxHeight;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(MaxHeight));
+            }
+        }
+
+        private decimal _maxArticlesScrollHeight => (decimal)SystemParameters.PrimaryScreenHeight - 90;
+        public decimal MaxArticlesScrollHeight
+        {
+            get
+            {
+                return _maxArticlesScrollHeight;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(MaxArticlesScrollHeight));
+            }
+        }
+
+        private decimal _maxCatHeight => (decimal)SystemParameters.PrimaryScreenHeight - 400;
+        public decimal MaxCatHeight
+        {
+            get
+            {
+                return _maxCatHeight;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(MaxCatHeight));
             }
         }
 
