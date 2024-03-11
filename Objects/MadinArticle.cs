@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows;
 
 namespace MadininApp.Objects
 {
@@ -52,7 +53,20 @@ namespace MadininApp.Objects
         public string ImageUrl { get; set; }
         public string HtmlContent { get; set; }
         public bool IsActualite { get => Title?.Contains("Actualités") ?? false; }
-        public bool IsGeneratedArticle {get;set;} 
+        public bool IsGeneratedArticle {get;set;}
+        private Visibility _imageVisibility = Visibility.Visible;
+        public Visibility ImageVisibility
+        {
+            get { return _imageVisibility; }
+            set
+            {
+                if (_imageVisibility != value)
+                {
+                    _imageVisibility = value;
+                    OnPropertyChanged(nameof(ImageVisibility));
+                }
+            }
+        }
 
         private bool _isTopArticle;
         public bool IsTopArticle

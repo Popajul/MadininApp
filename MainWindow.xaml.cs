@@ -389,6 +389,22 @@ namespace MadininApp
             
             UpdateTuileDroppedEventSubscription();
         }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in Model.OtherArticles)
+            {
+                item.ImageVisibility = Visibility.Collapsed;
+            }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in Model.OtherArticles)
+            {
+                item.ImageVisibility = Visibility.Visible;
+            }
+        }
     }
 
 }

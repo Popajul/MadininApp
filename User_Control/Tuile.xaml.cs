@@ -60,5 +60,13 @@ namespace MadininApp.User_Control
             
         }
 
+        private void OpenPopup_Click(object sender, RoutedEventArgs e)
+        {
+            myPopup.IsOpen = !myPopup.IsOpen;
+        }
+        private void ClosePopup_Click(object sender, RoutedEventArgs e)
+        {
+            myPopup.IsOpen = false;
+        }
     }
 }

@@ -35,12 +35,12 @@
         <Image Grid.Column="2" Grid.ColumnSpan="4"  Grid.Row="0" Source="https://www.madinin-art.net/images/logo_la_lettre_blanc.jpg" MaxWidth="500"></Image>
         <!--Top Article -->
         <StackPanel Grid.Column="1"  Grid.Row="0" Grid.RowSpan="4" Orientation="Horizontal" HorizontalAlignment="Center">
-            
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="10"/>
-                        <RowDefinition Height="Auto"/>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Border Background="WhiteSmoke" Width="300" Grid.Row="0">
@@ -60,21 +60,21 @@
                          ItemsSource="{Binding Categories}"
                          PreviewKeyDown="CategoriesListBox_PreviewKeyDown" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" ScrollViewer.PanningMode="VerticalOnly">
 
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
                         </ListBox>
                         <local:Button1 Button1Content="VALIDER" ButtonClick="OnOrderCategoryChanged"/>
                     </StackPanel>
                 </Border>
             </Grid>
-            
+
         </StackPanel>
         <!--Scrolling-->
         <!-- CheckBox alignée à gauche -->
-        <CheckBox Grid.Column="3" Grid.Row="1"  Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Left"/>
+
         <StackPanel Grid.Column="2" Grid.Row="1" Visibility="Hidden">
             <Button Width="25" >-</Button>
             <Button Width="25" >+</Button>
@@ -113,45 +113,45 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="100"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="100" />
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="100" />
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="50" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            
-            <local:Button1 Grid.Row="1" Grid.Column="1" Button1Content="Valider la sélection" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Center"/>
+                <RowDefinition Height="*"/>
 
-            <local:Button1 Grid.Row="3" Grid.Column="1" Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Center"/>
-            
-            <Border Background="WhiteSmoke" Grid.Row="5" Grid.Column="1">
-                
-                <StackPanel x:Name="PositionLettreStackPanel" Orientation="Vertical" Width="Auto">
-                    <Label  Content="Placement du texte de fin de lettre" Height="25" Width="200" HorizontalAlignment="Center"/>
-                    <RadioButton Content="en dessous" GroupName="PositionFinLettre" IsChecked="True" HorizontalAlignment="Stretch" Width="200"/>
-                    <RadioButton Content="à droite" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                    <RadioButton Content="à gauche" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                    <RadioButton Content="à droite séparé de l'article techno" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
-                </StackPanel>
-              
-            </Border>
-            <local:Button1 Grid.Row="8" Grid.Column="1" Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Center"/>
-            <TextBox Grid.Row="9" Grid.Column="1" Text="CSS inline :&#x0a; https://premailer.dialect.ca/" TextWrapping="Wrap" HorizontalAlignment="Center" Width="200" AcceptsReturn="True" TextAlignment="Center" IsEnabled="False" BorderThickness="0" BorderBrush="Transparent">
-                
-                <TextBox.Style>
-                    <Style TargetType="TextBox">
-                        <Style.Triggers>
-                            <Trigger Property="IsFocused" Value="True">
-                                <Setter Property="Text" Value="" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-            <!-- Les colonnes 1 et 3 servent d'espaces vides pour centrer le bouton -->
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="1" Grid.Column="1">
+                <CheckBox  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Left" IsChecked="true">images</CheckBox>
+                <CheckBox  Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Left">Tout selectionner</CheckBox>
+            </StackPanel>
+            <StackPanel Grid.Row="3"  Grid.Column="1">
+                <local:Button1  Button1Content="Valider la sélection" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Center" Margin="10"/>
+
+                <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Center" Margin="10"/>
+
+                <Border Background="WhiteSmoke" Margin="10" >
+
+                    <StackPanel x:Name="PositionLettreStackPanel" Orientation="Vertical" Width="Auto"  >
+                        <Label  Content="Placement du texte de fin de lettre" Height="25" Width="200" HorizontalAlignment="Center"/>
+                        <RadioButton Content="en dessous" GroupName="PositionFinLettre" IsChecked="True" HorizontalAlignment="Stretch" Width="200"/>
+                        <RadioButton Content="à droite" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
+                        <RadioButton Content="à gauche" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
+                        <RadioButton Content="à droite séparé de l'article techno" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200"/>
+                    </StackPanel>
+
+                </Border>
+                <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Center" Margin="10"/>
+                <TextBox  Margin="10" Text="CSS inline :&#x0a; https://premailer.dialect.ca/" TextWrapping="Wrap" HorizontalAlignment="Center" Width="200" AcceptsReturn="True" TextAlignment="Center" IsEnabled="False" BorderThickness="0" BorderBrush="Transparent">
+
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="Text" Value="" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

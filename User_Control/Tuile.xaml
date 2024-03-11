@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:objects="clr-namespace:MadininApp.Objects" d:DataContext="{d:DesignInstance Type=objects:MadinArticle}"
+             xmlns:local="clr-namespace:MadininApp.User_Control"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              MouseMove="Control_MouseMove"
@@ -14,50 +15,34 @@
             <!-- Partie toujours visible -->
             <Grid x:Name="tileGrid">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="30" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="60" />
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="20" />
+                    <RowDefinition Height="10" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <!-- ToggleButton pour l'expansion -->
-                <ToggleButton x:Name="ExpandCollapseButton" Grid.Row="0" Content="Voir plus" Width="100" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,5,5">
-                    <ToggleButton.Template>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="LightSkyBlue"/>
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="DeepSkyBlue"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </ToggleButton.Template>
+                <local:Button1 Grid.Row="0" Button1Content="Voir plus" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top"  ButtonClick="OpenPopup_Click">
+                </local:Button1>
+                <Popup Name="myPopup" Placement="Center" AllowsTransparency="True" PopupAnimation="Fade">
 
-                    <ToggleButton.Style>
-                        <Style TargetType="ToggleButton">
-                            <Setter Property="Background" Value="DeepSkyBlue"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="BorderBrush" Value="Black"/>
-                            <Setter Property="BorderThickness" Value="2"/>
-                            <Setter Property="FontSize" Value="14"/>
-                            <Setter Property="FontWeight" Value="Bold"/>
-                        </Style>
-                    </ToggleButton.Style>
-                </ToggleButton>
-                <TextBlock Grid.Row="1" Text="{Binding Category}" FontSize="10" FontStyle="Italic" HorizontalAlignment="Left"/>
-                <TextBlock Grid.Row="1" Text="{Binding Date}" FontSize="10" HorizontalAlignment="Right"/>
-                <TextBlock Grid.Row="2" Text="{Binding Author}" TextWrapping="Wrap" FontSize="12" Foreground="Red" HorizontalAlignment="Center" MaxHeight="15px"/>
-                <TextBlock Grid.Row="3" Text="{Binding Title}" TextWrapping="Wrap" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" MaxHeight="45px"/>
-                <Image Grid.Row="4" Source="{Binding ImageUrl}" Height="100" Stretch="Uniform"/>
+                    <Border Background="White" BorderBrush="Black" BorderThickness="1" Padding="10">
+                        <StackPanel>
+                            <local:Button1 Button1Content="Fermer" ButtonClick="ClosePopup_Click" HorizontalAlignment="Right" Margin="0,5,0,0" Height="25"/>
+                            <TextBlock Text="{Binding Content}" MaxWidth="300" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
 
-                <Grid Grid.Row ="6" Grid.RowSpan="2">
+                </Popup>
+                <TextBlock Grid.Row="0" Text="{Binding Category}" FontSize="10" FontStyle="Italic" HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="150"/>
+                <TextBlock Grid.Row="1" Text="{Binding Author}" TextWrapping="Wrap" FontSize="12" Foreground="Red" HorizontalAlignment="Center" MaxHeight="15px"/>
+                <TextBlock Grid.Row="2" Text="{Binding Title}" TextWrapping="Wrap" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center" MaxHeight="45px" />
+                <Image Grid.Row="4" Source="{Binding ImageUrl}" Height="80" Stretch="Uniform" Visibility="{Binding ImageVisibility}"/>
+
+                <Grid Grid.Row ="7" Grid.RowSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
@@ -88,35 +73,9 @@
                              Content="Top"
                              IsChecked="{Binding IsTopArticle, Mode=TwoWay}"/>
                 </Grid>
-                
-            </Grid>
 
-            <!-- Partie qui se déploie/rétracte -->
-            <StackPanel x:Name="ExpandableContent" Visibility="Collapsed">
-                <TextBlock Text="{Binding Content}" TextWrapping="Wrap" FontSize="12" HorizontalAlignment="Center" TextAlignment="Center"/>
-                <!-- Autres éléments expandables ici -->
-            </StackPanel>
+            </Grid>
         </StackPanel>
     </Border>
 
-    <UserControl.Triggers>
-        <EventTrigger RoutedEvent="ToggleButton.Checked" SourceName="ExpandCollapseButton">
-            <BeginStoryboard>
-                <Storyboard>
-                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandableContent" Storyboard.TargetProperty="Visibility">
-                        <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}"/>
-                    </ObjectAnimationUsingKeyFrames>
-                </Storyboard>
-            </BeginStoryboard>
-        </EventTrigger>
-        <EventTrigger RoutedEvent="ToggleButton.Unchecked" SourceName="ExpandCollapseButton">
-            <BeginStoryboard>
-                <Storyboard>
-                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandableContent" Storyboard.TargetProperty="Visibility">
-                        <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Collapsed}"/>
-                    </ObjectAnimationUsingKeyFrames>
-                </Storyboard>
-            </BeginStoryboard>
-        </EventTrigger>
-    </UserControl.Triggers>
 </UserControl>

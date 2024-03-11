@@ -393,6 +393,12 @@ namespace MadininApp.Services
                     stringBuilder.AppendLine(contentTemplate.Replace("[MadinUrl]", t.Item1).Replace("[Title]", ligne));
                    
                 }
+                var htmlContent = stringBuilder.ToString();
+                var htmlDocument = new HtmlDocument();
+                htmlDocument.LoadHtml(htmlContent);
+                
+                var content = htmlDocument.DocumentNode.InnerText;
+                
                 var generatedArticle = new MadinArticle()
                 {
                     Title = title,
@@ -402,7 +408,8 @@ namespace MadininApp.Services
                     IsTopArticle = false,
                     IsPlaceHolder = false,
                     IsGeneratedArticle = true,
-                    HtmlContent = stringBuilder.ToString()
+                    HtmlContent = stringBuilder.ToString(),
+                    Content = content
                 };
 
                 madinArticlesGenerated.Add(generatedArticle);
