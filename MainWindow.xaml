@@ -14,19 +14,32 @@
     </Window.Background>
     <Window.Resources>
         <Style TargetType="ListBoxItem">
-            <Setter Property="Background" Value="WhiteSmoke"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border Background="{TemplateBinding Background}"
+                        <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter />
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="2">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#a99785"/>
-                                <!-- Couleur de survol -->
+                                <!-- Effet de survol : grossissement -->
+                                <Setter TargetName="Bd" Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.08" ScaleY="1.08"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Bd" Property="Background" Value="LightGray"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <!-- Apparence des éléments sélectionnés -->
+                                <Setter TargetName="Bd" Property="Background" Value="#f2a81f"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="DarkOrange"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -34,6 +47,8 @@
             </Setter>
         </Style>
     </Window.Resources>
+
+
     <Border BorderBrush="#f2a81f"  BorderThickness="0.5,0.5,0.5,5">
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Grid>
@@ -100,7 +115,7 @@
                                 <ListBox  x:Name="CategoriesListBox" MaxHeight="{Binding MaxCatHeight}"
                          ItemsSource="{Binding Categories}"
                          PreviewKeyDown="CategoriesListBox_PreviewKeyDown" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" ScrollViewer.PanningMode="VerticalOnly"
-                                      BorderThickness="0" Foreground="Black">
+                                      BorderThickness="0" Foreground="black"  SelectionMode="Single">
 
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -122,7 +137,7 @@
                     <!-- Action sur l'affichage des tuiles articles-->
                     <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                         <CheckBox  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" HorizontalAlignment="Center" IsChecked="false" Margin="5" Foreground="yellow">Reduire toutes les tuiles</CheckBox>
-                        <CheckBox  Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Center" Margin="5" Foreground="yellow">Tout selectionner</CheckBox>
+                        <CheckBox  x:Name="ToutSelectionnerCheckBox" Checked="OnSelectAllChecked" Unchecked="OnSelectAllChecked" HorizontalAlignment="Center" Margin="5" Foreground="yellow">Tout selectionner</CheckBox>
                     </StackPanel>
                     <Border BorderBrush="#f2a81f" BorderThickness="0,4,0,0" Opacity="0.85" >
 
@@ -181,11 +196,16 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" >
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                            <local:Button1  Button1Content="Supprimer les articles non selectionnés" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
-                            <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
-                            <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
-                        </StackPanel>
+                        
+                            <UniformGrid Rows="6" Columns="1">
+                            <local:Button1  Button1Content="Reinitialiser" ButtonClick="OnReinitialiserClicked"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                            <local:Button1  Button1Content="Sauvegarder" ButtonClick="OnSauvegarderClicked"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                            <local:Button1  Button1Content="Ouvrir une sauvegarde" ButtonClick="OnLoadDataClicked"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                                <local:Button1  Button1Content="Supprimer les articles non selectionnés" ButtonClick="OnSelectionValidate"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                                <local:Button1  Button1Content="ti pawòl a chèf la" ButtonClick="OnOpenTextEditor"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                                <local:Button1  Button1Content="Générer la lettre" ButtonClick="OnValiderClicked" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+                            </UniformGrid>
+                            
                         <Border Background="WhiteSmoke" Margin="10" Width="Auto" BorderBrush="#f2a81f"  BorderThickness="3,0,0,0">
 
                             <StackPanel x:Name="PositionLettreStackPanel" Orientation="Vertical" Width="Auto">
@@ -193,7 +213,6 @@
                                 <RadioButton Content="en dessous" GroupName="PositionFinLettre" IsChecked="True" HorizontalAlignment="Stretch" Width="200" Foreground="#7f674e"/>
                                 <RadioButton Content="à droite" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200" Foreground="#7f674e"/>
                                 <RadioButton Content="à gauche" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200" Foreground="#7f674e"/>
-                                <RadioButton Content="à droite séparé de l'article techno" GroupName="PositionFinLettre" HorizontalAlignment="Stretch" Width="200" Foreground="#7f674e"/>
                             </StackPanel>
 
                         </Border>

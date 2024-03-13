@@ -4,10 +4,12 @@ using MadininApp.User_Control;
 using MadininApp.ViewModel;
 using MadininApp.Windows;
 using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -50,7 +52,7 @@ namespace MadininApp
             InitializeComponent();
             myStackItemsControl.Loaded += MyItemsControl_Loaded;
             myWrapItemsControl.Loaded += MyItemsControl_Loaded;
-            
+
 
         }
 
@@ -61,14 +63,12 @@ namespace MadininApp
             foreach (var item in myStackItemsControl.Items)
             {
                 // Obtenir le conteneur d'éléments pour l'item actuel
-                var container = myStackItemsControl.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
-                if (container != null)
+                if (myStackItemsControl.ItemContainerGenerator.ContainerFromItem(item) is FrameworkElement container)
                 {
                     // Trouver l'instance de Tuile à l'intérieur du conteneur d'éléments
                     Tuile tuile = VisualTreeHelperExtensions.FindVisualChild<Tuile>(container);
                     if (tuile != null)
                     {
-
                         tuile.TuileDropped -= Tuile_TuileDropped;
                         tuile.TuileDropped += Tuile_TuileDropped;
                     }
@@ -77,8 +77,7 @@ namespace MadininApp
             foreach (var item in myWrapItemsControl.Items)
             {
                 // Obtenir le conteneur d'éléments pour l'item actuel
-                var container = myWrapItemsControl.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
-                if (container != null)
+                if (myWrapItemsControl.ItemContainerGenerator.ContainerFromItem(item) is FrameworkElement container)
                 {
                     // Trouver l'instance de Tuile à l'intérieur du conteneur d'éléments
                     Tuile tuile = VisualTreeHelperExtensions.FindVisualChild<Tuile>(container);
@@ -105,14 +104,18 @@ namespace MadininApp
         {
             // suppression des article non selectionné de la liste des articles
             Model.DataCollection = new ObservableCollection<MadinArticle>(Model.DataCollection.Where(a => a.IsChecked));
-            Model.OtherArticles = new ObservableCollection<MadinArticle>(Model.OtherArticles.Where(a => a?.IsChecked??false));
+            Model.OtherArticles = new ObservableCollection<MadinArticle>(Model.OtherArticles.Where(a => a?.IsChecked ?? false));
+            if(Model.OtherArticles.Count % 2 != 0)
+            {
+                Model.OtherArticles.Add(MadinArticle.GetPlaceHolderArticle());
+            }
             RefreshDataContextCategories();
             UpdateTuileDroppedEventSubscription();
         }
         //Generation de la lettre Html
         private void OnValiderClicked(object sender, RoutedEventArgs e)
         {
-            var selectedItems = _model.OtherArticles.ToList();
+            var selectedItems = _model.OtherArticles.Where(a=>a.IsChecked).ToList();
             string positionBasLettre = null;
             foreach (var child in PositionLettreStackPanel.Children)
             {
@@ -122,7 +125,7 @@ namespace MadininApp
                     break;
                 }
             }
-            
+
             var lettreHtml = HtmlGenerator.CreateHtmlFile(selectedItems, _model.TopArticle, LeMotDuChef, positionBasLettre);
             SaveFile(lettreHtml);
         }
@@ -163,9 +166,9 @@ namespace MadininApp
 
         private void Tuile_TuileDropped(Tuile source, Tuile target)
         {
-            var DataCollection = Model.OtherArticles;
-            int targetIndex = DataCollection.IndexOf(target.Article);
-            int sourceIndex = DataCollection.IndexOf(source.Article);
+            var dataCollection = Model.OtherArticles;
+            int targetIndex = dataCollection.IndexOf(target.Article);
+            int sourceIndex = dataCollection.IndexOf(source.Article);
             var articleSource = source.Article;
             var articleTarget = target.Article;
             if (sourceIndex < 0 || targetIndex < 0 || sourceIndex == targetIndex || articleSource.IsPlaceHolder) return; // No valid drop, or dropped on itself
@@ -173,24 +176,23 @@ namespace MadininApp
             // Deux cas à gérer selon que l'article cible et l'article source appartiennent à la même colonne ou non
             // Les index de la premiere colonne sont pairs et ceux de la deuxième colonne sont impairs
             bool moveFromSameColumn = sourceIndex % 2 == targetIndex % 2;
-            var targetColumn = new ObservableCollection<MadinArticle>(DataCollection.Where((a, i) => i % 2 == targetIndex % 2));
-            var sourceColumn = new ObservableCollection<MadinArticle>(DataCollection.Where((a, i) => i % 2 == sourceIndex % 2));
+            var targetColumn = new ObservableCollection<MadinArticle>(dataCollection.Where((a, i) => i % 2 == targetIndex % 2));
+            var sourceColumn = new ObservableCollection<MadinArticle>(dataCollection.Where((a, i) => i % 2 == sourceIndex % 2));
             if (moveFromSameColumn)
             {
                 // TargetColumn == SourceColumn
-                var secondColumn = DataCollection.Where((a, i) => i % 2 != sourceIndex % 2).ToList();
+                var secondColumn = dataCollection.Where((a, i) => i % 2 != sourceIndex % 2).ToList();
                 var sourceIndexInTargetColumn = targetColumn.IndexOf(articleSource);
                 var targetIndexInTargetColumn = targetColumn.IndexOf(articleTarget);
-                
-                sourceColumn.Move(sourceIndexInTargetColumn, targetIndexInTargetColumn - 1 < 0? 0 : targetIndexInTargetColumn - 1);
+                sourceColumn.Move(sourceIndexInTargetColumn, targetIndexInTargetColumn - 1 < 0 ? 0 : targetIndexInTargetColumn - 1);
                 //On reconstruit la liste de tous les articles
 
 
-                for (int i = 0; i < DataCollection.Count; i++)
+                for (int i = 0; i < dataCollection.Count; i++)
                 {
                     if (i % 2 == sourceIndex % 2)
                     {
-                        DataCollection[i] = sourceColumn[i / 2];
+                        dataCollection[i] = sourceColumn[i / 2];
                     }
                     else
                     {
@@ -201,18 +203,22 @@ namespace MadininApp
             }
             else
             {
-                var fakeArticleInSourceColumn = sourceColumn.FirstOrDefault(a => a.IsPlaceHolder);
-                if (fakeArticleInSourceColumn != null)
+                // Suppression des Fake articles ils seront ajouté après le déplacement pour rééquilibrer les colonnes avant de reconstruire la collection complète
+                var fakeArticleInSourceColumn = sourceColumn.Where(a => a?.IsPlaceHolder??true).ToList();
+                foreach (var fakeArticle in fakeArticleInSourceColumn)
                 {
-                    sourceColumn.Remove(fakeArticleInSourceColumn);
+                    sourceColumn.Remove(fakeArticle);
+                }
+               
+                var FakeArticleInTargetColumn = targetColumn.Where(a => a?.IsPlaceHolder ?? true).ToList();
+                foreach (var fakeArticle in FakeArticleInTargetColumn)
+                {
+                    targetColumn.Remove(fakeArticle);
                 }
 
-                var FakeArticleInTargetColumn = targetColumn?.FirstOrDefault(a => a?.IsPlaceHolder??true);
-                
-                targetColumn.Remove(FakeArticleInTargetColumn);
-                
                 // On Supprime l'article source de sa colonne d'origine
-                sourceColumn.Remove(articleSource);
+                if(!articleSource.IsPlaceHolder)
+                    sourceColumn.Remove(articleSource);
                 // On l'insert dans la colonne cible
                 var targetIndexInTargetColumn = targetColumn.IndexOf(articleTarget);
                 if (targetIndexInTargetColumn < 0)
@@ -226,20 +232,19 @@ namespace MadininApp
 
                 // si le nombre d'articles sur la colonne source est inférieur à celui de la colonne cible et que la colonne source est la colonne de gauche 
                 // on ajoute un article vide à la fin de la colonne source
-                bool fakeArticleInserted = false;
-                if (sourceColumn.Count < targetColumn.Count && sourceIndex % 2 == 0)
+                int fakeArticleInserted = 0;
+                var sourceColumnCount = sourceColumn.Count;
+                var targetColumnCount = targetColumn.Count;
+                if (sourceColumnCount != targetColumnCount)
                 {
-                    var addedfakeArticle = MadinArticle.GetPlaceHolderArticle();
-                    sourceColumn.Add(addedfakeArticle);
-                    fakeArticleInserted = true;
-                }
-                // Si la colonne cible est la colonne de gauche et que après le déplacement elle contient plus d'articles que la colonne de droite
-                // On supprime les éventuelle articles vides
-                if (targetColumn.Count > sourceColumn.Count && targetIndex % 2 == 0)
-                {
-                    var previousAddedfakeArticle = targetColumn.FirstOrDefault(a => a?.IsPlaceHolder??true);
                     
-                        targetColumn.Remove(previousAddedfakeArticle);
+                    var column = sourceColumnCount < targetColumnCount ? sourceColumn : targetColumn;
+                    while(sourceColumn.Count != targetColumn.Count)
+                    {
+                        var addedfakeArticle = MadinArticle.GetPlaceHolderArticle();
+                        column.Add(addedfakeArticle);
+                        fakeArticleInserted += 1;
+                    }
                 }
 
                 // On reconstruit la liste de tous les articles
@@ -255,35 +260,27 @@ namespace MadininApp
                     firstCollection = targetColumn;
                     secondCollection = sourceColumn;
                 }
-                var fakeArticle = DataCollection.FirstOrDefault(a => a.IsPlaceHolder);
-                if (fakeArticle != null) 
-                {
-                    DataCollection.Remove(fakeArticle);
-                }
-
                 
-                for (int i = 0; i < DataCollection.Count; i++)
+                var counter = dataCollection.Where(a=>a.IsNotPlaceHolder).Count() + fakeArticleInserted;
+                dataCollection = new ObservableCollection<MadinArticle>(Enumerable.Repeat<MadinArticle>(null, counter));
+                for (int i = 0; i < counter; i++)
                 {
 
                     if (i % 2 == 0)
                     {
                         var art = firstCollection.First();
                         firstCollection.Remove(art);
-                        DataCollection[i] = art;
+                        dataCollection[i] = art;
                     }
                     else
                     {
                         var art = secondCollection.FirstOrDefault();
                         secondCollection.Remove(art);
-                        DataCollection[i] = art;
+                        dataCollection[i] = art;
                     }
                 }
-                if (fakeArticleInserted)
-                {
-                    DataCollection.Add(secondCollection.Last());
-                }
             }
-
+            Model.OtherArticles = dataCollection;
             UpdateTuileDroppedEventSubscription();
 
         }
@@ -343,20 +340,20 @@ namespace MadininApp
 
         private void OnOrderCategoryChanged(object sender, RoutedEventArgs e)
         {
-           var orderedCategories = CategoriesListBox.Items.Cast<string>().ToList();
+            var orderedCategories = CategoriesListBox.Items.Cast<string>().ToList();
             OrderDataCollectionByCategory(orderedCategories);
         }
 
         private void OrderDataCollectionByCategory(List<string> orderedCategories)
         {
             var madinArticles = Model.OtherArticles;
-          
+
 
             var articlesSansCategory = madinArticles.Where(a => string.IsNullOrWhiteSpace(a.Category)).ToList();
             var articleAvecCategory = madinArticles.Where(a => !string.IsNullOrWhiteSpace(a.Category)).ToList();
 
             var articleGroupByCategory = articleAvecCategory.GroupBy(a => a.Category);
-            List<IGrouping<string,MadinArticle>> orderedGroupByCategory = new List<IGrouping<string, MadinArticle>>();
+            List<IGrouping<string, MadinArticle>> orderedGroupByCategory = new List<IGrouping<string, MadinArticle>>();
 
             foreach (var category in orderedCategories)
             {
@@ -397,14 +394,14 @@ namespace MadininApp
                 result.Add(article);
             }
             result.AddRange(articlesSansCategory);
-           
 
-            
+
+
             for (int i = 0; i < result.Count; i++)
             {
                 Model.OtherArticles[i] = result[i];
             }
-            
+
             UpdateTuileDroppedEventSubscription();
         }
 
@@ -415,7 +412,7 @@ namespace MadininApp
                 art.ImageVisibility = Visibility.Visible;
             }
             SwitchPanel(sender, e);
-            
+
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -443,6 +440,57 @@ namespace MadininApp
                 myStackPanel.Visibility = Visibility.Collapsed;
             }
             UpdateLayout();
+        }
+
+        private void OnReinitialiserClicked(object sender, RoutedEventArgs e)
+        {
+            _model = new MainViewModel();
+            DataContext = Model;
+            InitializeComponent();
+            myStackItemsControl.Loaded += MyItemsControl_Loaded;
+            myWrapItemsControl.Loaded += MyItemsControl_Loaded;
+            ToutSelectionnerCheckBox.IsChecked = false;
+        }
+
+        private void OnSauvegarderClicked(object sender, RoutedEventArgs e)
+        {
+            var json = Model.SaveData();
+            SaveFileDialog openFileDialog = new SaveFileDialog
+            {
+                Filter = "MADININAPP File (*.mdn)|*.mdn|Tous les fichiers (*.*)|*.*",
+                DefaultExt = "mdn", // Extension par défaut
+                AddExtension = true, // Ajouter l'extension si l'utilisateur ne le fait pas
+                Title = "Sauvegarder",
+                FileName = $"{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}.mdn",
+            };
+
+            if(openFileDialog.ShowDialog()??false)
+                File.WriteAllText(openFileDialog.FileName, json,Encoding.UTF8);
+        
+        }
+
+        private void OnLoadDataClicked(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "MADININAPP File (*.mdn)|*.mdn|Tous les fichiers (*.*)|*.*",
+                DefaultExt = "mdn", // Extension par défaut
+                AddExtension = true, // Ajouter l'extension si l'utilisateur ne le fait pas
+          
+            };
+            // Afficher le dialogue
+            bool? result = openFileDialog.ShowDialog();
+
+            // Traitement du résultat
+            if (result == true)
+            {
+                // L'utilisateur a sélectionné un fichier
+                string cheminFichier = openFileDialog.FileName;
+                DataContext = Model.LoadData(cheminFichier);
+                InitializeComponent();
+                myStackItemsControl.Loaded += MyItemsControl_Loaded;
+                myWrapItemsControl.Loaded += MyItemsControl_Loaded;
+            }
         }
     }
 

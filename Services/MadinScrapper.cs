@@ -17,6 +17,14 @@ namespace MadininApp.Services
     internal static class MadinScrapper
     {
         private const string URL = "https://www.madinin-art.net/";
+        private static readonly string _technoImgSrc = "https://www.madinin-art.net/wp-content/uploads/2014/06/messageries.jpg";
+        private static readonly string _technoCategory = "Technologies";
+        private static readonly string _technoTitle = "Comment mettre La Lettre de Madinin'Art en liste blanche";
+        private static readonly string _technoHtmlContent =
+            @"<p>
+            Même si vous êtes abonné à La Lettre de Madinin’Art, elle peut souvent arriver par erreur dans le dossier spam de votre messagerie ! Afin d’éviter cela, vous devez placer l’adresse de l’expéditeur dans votre liste blanche. La procédure diffère légèrement selon le programme ou service de messagerie que vous utilisez.
+                <p><a class=""read-more"" href=""https://www.madinin-art.net/comment-mettre-la-lettre-de-madininart-en-liste-blanche/"">Lire Plus</a></p>
+            </p>";
         /// <summary>
         /// Extraction des catégories et de leurs urls d'un document html
         /// </summary>
@@ -250,7 +258,24 @@ namespace MadininApp.Services
             result.AddRange(articlesSansCategory);
             result.Insert(0, topArticle);
 
-
+            var technoArticle = new MadinArticle()
+            {
+                Author = "",
+                Category = _technoCategory,
+                Content = "",
+                Date = "",
+                HtmlContent = _technoHtmlContent,
+                ImageUrl = _technoImgSrc,
+                IsChecked = true,
+                Node = null,
+                Title = _technoTitle,
+                IsTopArticle = false
+            };
+            result.Add(technoArticle);
+            if(result.Count%2 ==0)
+            {
+                result.Add(MadinArticle.GetPlaceHolderArticle());
+            }
             return result;
         }
         /// <summary>

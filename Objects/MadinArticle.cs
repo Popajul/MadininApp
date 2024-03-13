@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 using System.Windows;
 
 namespace MadininApp.Objects
@@ -82,6 +83,7 @@ namespace MadininApp.Objects
             }
         }
         public string MadinUrl { get; set; }
+        [JsonIgnore]
         public HtmlNode Node { get; set; }
         public bool IsPlaceHolder { get; set; } = false;
         public bool IsNotPlaceHolder { get => !IsPlaceHolder; }

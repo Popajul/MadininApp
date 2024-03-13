@@ -1,10 +1,15 @@
 ﻿using MadininApp.Objects;
 using MadininApp.Services;
 using MadininApp.User_Control;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -88,7 +93,6 @@ namespace MadininApp.ViewModel
                 if (_categories == null)
                 {
                     _categories = new ObservableCollection<string>(DataCollection.Select(a=>a.Category).Distinct());
-                    
                 }
                 return _categories;
             }
@@ -196,6 +200,24 @@ namespace MadininApp.ViewModel
 
             }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public string SaveData()
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            return JsonSerializer.Serialize(DataCollection, options);
+            
+        }
+
+        public MainViewModel LoadData(string cheminFichier)
+        {
+            if (!string.IsNullOrEmpty(cheminFichier))
+            {
+                string jsonString = File.ReadAllText(cheminFichier);
+                var data = JsonSerializer.Deserialize<ObservableCollection<MadinArticle>>(jsonString);
+                return new MainViewModel { DataCollection =  data};
+            }
+            return this;
         }
     }
 

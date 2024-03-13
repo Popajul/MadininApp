@@ -53,14 +53,7 @@ namespace MadininApp.Services
     {
         private static readonly string _path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LaLettre.html");
         private static readonly string _outputPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"LaLettreFinale.html");
-        private static readonly string _technoImgSrc = "https://www.madinin-art.net/wp-content/uploads/2014/06/messageries.jpg";
-        private static readonly string _technoCategory = "Technologies";
-        private static readonly string _technoTitle = "Comment mettre La Lettre de Madinin'Art en liste blanche";
-        private static readonly string _technoHtmlContent =
-            @"<p>
-            Même si vous êtes abonné à La Lettre de Madinin’Art, elle peut souvent arriver par erreur dans le dossier spam de votre messagerie ! Afin d’éviter cela, vous devez placer l’adresse de l’expéditeur dans votre liste blanche. La procédure diffère légèrement selon le programme ou service de messagerie que vous utilisez.
-                <p><a class=""read-more"" href=""https://www.madinin-art.net/comment-mettre-la-lettre-de-madininart-en-liste-blanche/"">Lire Plus</a></p>
-            </p>";
+        
 
         /// <summary>
         /// L'objectif de cette méthode est de réordonner la selection d'article
@@ -131,23 +124,47 @@ namespace MadininApp.Services
 
         public static string CreateHtmlFile(List<MadinArticle> articles,MadinArticle topArticle, BlockCollection leMotDuChef, string positionBasLettre)
         {
-            var articlesSelected = articles.Where(a => !a.IsTopArticle).ToList();
+            // On ne veut pas modifier les articles utiliser dans la DataContext de l'application 
+            // On va donc créer une copie de la liste des articles pour les manipuler dans le cadre de la génération HTML
+            var articlesFromDataContext = articles.Where(a => !a.IsTopArticle).ToList();
+            var articlesSelected = articlesFromDataContext;
             List<MadinArticle> lastArticles = new List<MadinArticle>();
-            
-            var technoArticle = new MadinArticle()
+            var lastLeftArticle = articlesSelected.Where((art, i) => i % 2 == 0).Last();
+            var lastLeftArticleUsedForGeneration = new MadinArticle()
             {
-                Author = "",
-                Category = _technoCategory,
-                Content = "",
-                Date = "",
-                HtmlContent = _technoHtmlContent,
-                ImageUrl = _technoImgSrc,
+                Author = lastLeftArticle.Author,
+                Category = lastLeftArticle.Category,
+                Content = lastLeftArticle.Content,
+                Date = lastLeftArticle.Date,
+                HtmlContent = lastLeftArticle.HtmlContent,
+                ImageUrl = lastLeftArticle.ImageUrl,
                 IsChecked = true,
-                Node = null,
-                Title = _technoTitle,
-                IsTopArticle = false
+                Title = lastLeftArticle.Title,
+                IsTopArticle = lastLeftArticle.IsTopArticle,
+                IsPlaceHolder = lastLeftArticle.IsPlaceHolder,
+                MadinUrl = lastLeftArticle.MadinUrl,
+                IsGeneratedArticle = lastLeftArticle.IsGeneratedArticle
             };
-            
+            var lastRightArticle = articlesSelected.Where((art, i) => i % 2 == 1).Last();
+            var lastRightArticleUsedForGeneration = new MadinArticle()
+            {
+                Author = lastRightArticle.Author,
+                Category = lastRightArticle.Category,
+                Content = lastRightArticle.Content,
+                Date = lastRightArticle.Date,
+                HtmlContent = lastRightArticle.HtmlContent,
+                ImageUrl = lastRightArticle.ImageUrl,
+                IsChecked = true,
+                Title = lastRightArticle.Title,
+                IsTopArticle = lastRightArticle.IsTopArticle,
+                IsPlaceHolder = lastRightArticle.IsPlaceHolder,
+                MadinUrl = lastRightArticle.MadinUrl,
+                IsGeneratedArticle = lastRightArticle.IsGeneratedArticle
+            };
+
+            articlesSelected[articlesSelected.IndexOf(lastLeftArticle)]= lastLeftArticleUsedForGeneration;
+            articlesSelected[articlesSelected.IndexOf(lastRightArticle)]= lastRightArticleUsedForGeneration;
+
             if (leMotDuChef.Any())
             {
                 var articleDuChef = CreateMadinArticleFromBlockCollection(leMotDuChef,positionBasLettre);
@@ -187,9 +204,6 @@ namespace MadininApp.Services
             // Charger le template HTML
             string htmlTemplate = File.ReadAllText(_path);
 
-            
-           /* MadinArticle overflowArticle = new MadinArticle();*/
-
             StringBuilder lastArticlesHtml = new StringBuilder();
             foreach (var article in lastArticles)
             {
@@ -203,44 +217,25 @@ namespace MadininApp.Services
             if (positionBasLettre == "à gauche")
             {
                 // On place le techno article et les lastArticles à gauche
-                var fakeArticle = articlesSelected.FirstOrDefault(a=>a.IsPlaceHolder);
-                if (fakeArticle == null)
-                {
-                    positionBasLettre = "en dessous";
-                }
-                else
-                {
-                    // On réuni le html content 
-                    var htmlContent = lastArticlesHtml.ToString();
+                if(lastLeftArticleUsedForGeneration.IsPlaceHolder)
+                    lastLeftArticleUsedForGeneration.ImageUrl = "";  
 
-                    technoArticle.HtmlContent += htmlContent;
-                    var fakeIndex = articlesSelected.IndexOf(fakeArticle);
-                    articlesSelected[fakeIndex] =technoArticle;
-                }
+                // On réuni le html content 
+                var htmlContent = lastArticlesHtml.ToString();
+
+                lastLeftArticleUsedForGeneration.HtmlContent += htmlContent;
             }
             if (positionBasLettre == "à droite")
             {
+                if (lastRightArticleUsedForGeneration.IsPlaceHolder)
+                    lastRightArticleUsedForGeneration.ImageUrl = "";
+
                 // On réuni le html content 
                 var htmlContent = lastArticlesHtml.ToString();
 
-                technoArticle.HtmlContent += htmlContent;
-                articlesSelected.Add(technoArticle);
+                lastRightArticleUsedForGeneration.HtmlContent += htmlContent;
             }
-            if(positionBasLettre == "à droite séparé de l'article techno")
-            {
-                articlesSelected.Add(technoArticle);
-                // On réuni le html content 
-                var htmlContent = lastArticlesHtml.ToString();
-                var nextArticle = MadinArticle.GetPlaceHolderArticle();
-                nextArticle.HtmlContent = htmlContent;
-                nextArticle.ImageUrl = "";
-                articlesSelected.Add(nextArticle);
-
-            }
-            if (positionBasLettre == "en dessous")
-            {
-                articlesSelected.Add(technoArticle);
-            }
+           
 
             // Construire les articles HTML
             List<string> articlesHtml = new List<string>();
