@@ -229,6 +229,10 @@
                                 </Style>
                             </TextBox.Style>
                         </TextBox>
+                        <local:Button2 Button2ImageSource="\Images\Icones\help_icon.png" ButtonClick="ShowHelpWindow"/>
+
+
+
                     </StackPanel>
                 </Grid>
             </Grid>

@@ -28,7 +28,7 @@
     <InstallUrl>https://popajul.github.io/MadininAppDeploy/</InstallUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>15</ApplicationRevision>
+    <ApplicationRevision>16</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -135,6 +135,9 @@
     <Compile Include="Objects\MadinArticle.cs" />
     <Compile Include="Services\HtmlGenerator.cs" />
     <Compile Include="Services\MadinScrapper.cs" />
+    <Compile Include="User_Control\Button2.xaml.cs">
+      <DependentUpon>Button2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="User_Control\Button1.xaml.cs">
       <DependentUpon>Button1.xaml</DependentUpon>
     </Compile>
@@ -143,6 +146,9 @@
     </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="VisualTreeHelperExtension.cs" />
+    <Compile Include="Windows\HelpWindow.xaml.cs">
+      <DependentUpon>HelpWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\TextEditor.xaml.cs">
       <DependentUpon>TextEditor.xaml</DependentUpon>
     </Compile>
@@ -158,6 +164,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="User_Control\Button2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="User_Control\Button1.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -165,6 +175,10 @@
     <Page Include="User_Control\Tuile.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\HelpWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\TextEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -219,6 +233,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\istockphoto-1336797294-612x612.jpg" />
+    <Resource Include="Images\Icones\help_icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="LaLettre.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

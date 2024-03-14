@@ -467,7 +467,7 @@ namespace MadininApp
                 DefaultExt = "mdn", // Extension par défaut
                 AddExtension = true, // Ajouter l'extension si l'utilisateur ne le fait pas
                 Title = "Sauvegarder",
-                FileName = $"{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}.mdn",
+                FileName = $"{DateTime.Now:dd_MM_yyyy_HH_mm_ss}.mdn",
             };
 
             if(openFileDialog.ShowDialog()??false)
@@ -498,7 +498,15 @@ namespace MadininApp
                 UpdateTuileDroppedEventSubscription();
             }
         }
+        private void ShowHelpWindow(object sender, RoutedEventArgs e)
+        {
+            HelpWindow helpWindow = new HelpWindow();
+            helpWindow.Owner = this;
+            helpWindow.ShowDialog(); // Affiche la fenêtre en mode modale
+        }
     }
+    
+
 
 }
 
