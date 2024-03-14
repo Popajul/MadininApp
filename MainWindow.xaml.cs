@@ -34,6 +34,10 @@ namespace MadininApp
                 }
                 return _model;
             }
+            set
+            {
+                _model = value;
+            }
         }
         private TextEditorWindow Editor
         {
@@ -450,6 +454,8 @@ namespace MadininApp
             myStackItemsControl.Loaded += MyItemsControl_Loaded;
             myWrapItemsControl.Loaded += MyItemsControl_Loaded;
             ToutSelectionnerCheckBox.IsChecked = false;
+            RefreshDataContextCategories();
+            UpdateTuileDroppedEventSubscription();
         }
 
         private void OnSauvegarderClicked(object sender, RoutedEventArgs e)
@@ -486,10 +492,10 @@ namespace MadininApp
             {
                 // L'utilisateur a sélectionné un fichier
                 string cheminFichier = openFileDialog.FileName;
-                DataContext = Model.LoadData(cheminFichier);
-                InitializeComponent();
-                myStackItemsControl.Loaded += MyItemsControl_Loaded;
-                myWrapItemsControl.Loaded += MyItemsControl_Loaded;
+                Model = Model.LoadData(cheminFichier);
+                DataContext = Model;
+                RefreshDataContextCategories();
+                UpdateTuileDroppedEventSubscription();
             }
         }
     }

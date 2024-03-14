@@ -215,6 +215,10 @@ namespace MadininApp.ViewModel
             {
                 string jsonString = File.ReadAllText(cheminFichier);
                 var data = JsonSerializer.Deserialize<ObservableCollection<MadinArticle>>(jsonString);
+                if(data.Count%2 == 0)
+                {
+                    data.Add(MadinArticle.GetPlaceHolderArticle());
+                }
                 return new MainViewModel { DataCollection =  data};
             }
             return this;
