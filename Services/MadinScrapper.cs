@@ -6,7 +6,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -151,6 +153,10 @@ namespace MadininApp.Services
                 // Title
                 var titleNode = node.SelectSingleNode($"(.//*[contains(concat(' ', normalize-space(@class), ' '), ' entry-title ')])");
                 var title = titleNode == null ? "" : HtmlEntity.DeEntitize(titleNode.InnerText).Trim();
+                if(title.Contains("retraite"))
+                {
+                  
+                }
                 // Date
                 var dateNode = node.SelectSingleNode($"(.//*[contains(concat(' ', normalize-space(@class), ' '), ' published updated ')])");
                 var date = dateNode == null ? "" : HtmlEntity.DeEntitize(dateNode.InnerText).Trim();
@@ -178,7 +184,20 @@ namespace MadininApp.Services
                 {
                     author = content.Substring(startDashIndex + 1, endDashIndex - startDashIndex - 1).Trim();
                 }
+                // Décoder les entités HTML dans le contenu
+                Regex htmlEntityRegex = new Regex("&##[^;]+;|&#[^;]+;|&[A-Za-z]+;");
+                MatchCollection matches = htmlEntityRegex.Matches(author);
 
+                // Parcourir toutes les correspondances et les décoder
+                foreach (Match match in matches)
+                {
+                    string encodedEntity = match.Value;
+                    encodedEntity = encodedEntity.Replace("##", "#");
+                    string decodedEntity = HttpUtility.HtmlDecode(encodedEntity);
+
+                    // Remplacez l'entité encodée par sa forme décodée dans le contenu
+                    author = author.Replace(encodedEntity, decodedEntity);
+                }
                 var madinUrl = contentNode.SelectSingleNode($"(.//*[contains(concat(' ', normalize-space(@class), ' '), ' read-more ')])")?.GetAttributeValue("href", string.Empty) ?? "";
                 // Nettoyage
                 var cleanedContentNode = NewNodeWithoutAuthorAndImg(contentNode, author);
@@ -272,7 +291,7 @@ namespace MadininApp.Services
                 IsTopArticle = false
             };
             result.Add(technoArticle);
-            if(result.Count%2 ==0)
+            if (result.Count % 2 == 0)
             {
                 result.Add(MadinArticle.GetPlaceHolderArticle());
             }
@@ -373,7 +392,7 @@ namespace MadininApp.Services
                         MadinUrl = "https://www.madinin-art.net/cat/yekri/",
                         SelectorPredicate = a => (a.Category.Contains("Yékri") && a.Title.Contains("éphéméride"))
                     },
-                    new GeneratedArticleBuilder() 
+                    new GeneratedArticleBuilder()
                     {
                         Title="Les chroniques de J-M Nol",
                         ImageUrl = "https://www.madinin-art.net/wp-content/uploads/2024/03/cat_chroniques_de_J-M_Nol.jpg",
@@ -391,7 +410,7 @@ namespace MadininApp.Services
 
 
             };
-           
+
 
             foreach (var builder in builders)
             {
@@ -401,7 +420,7 @@ namespace MadininApp.Services
                 var predicate = builder.SelectorPredicate;
                 var articles = unfilteredArticle.Where(a => predicate(a));
 
-                var titles = new List<(string, string,string)>();
+                var titles = new List<(string, string, string)>();
                 if (title == "Nos belles éphémérides")
                 {
                     titles = articles.Select(a => (a.MadinUrl, Title: a.Subtitle, a.Author)).Where(a => !string.IsNullOrWhiteSpace(a.Title)).ToList();
@@ -414,16 +433,16 @@ namespace MadininApp.Services
                 StringBuilder stringBuilder = new StringBuilder();
                 foreach (var t in titles)
                 {
-                    var ligne = String.IsNullOrWhiteSpace(t.Item3) ? t.Item2 : t.Item2 + " - " + (t.Item3.Contains("Par") ? "" : builder.Title =="Les chroniques de J-M Nol" ? "" : "Par") + t.Item3;
+                    var ligne = String.IsNullOrWhiteSpace(t.Item3) ? t.Item2 : t.Item2 + " - " + (t.Item3.Contains("Par") ? "" : builder.Title == "Les chroniques de J-M Nol" ? "" : "Par") + t.Item3;
                     stringBuilder.AppendLine(contentTemplate.Replace("[MadinUrl]", t.Item1).Replace("[Title]", ligne));
-                   
+
                 }
                 var htmlContent = stringBuilder.ToString();
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(htmlContent);
-                
+
                 var content = htmlDocument.DocumentNode.InnerText;
-                
+
                 var generatedArticle = new MadinArticle()
                 {
                     Title = title,
