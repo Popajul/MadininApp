@@ -311,9 +311,10 @@ namespace MadininApp.Services
 
             var isAuthor = !String.IsNullOrEmpty(author);
 
-            var nodes = originalNode.SelectNodes(".//p");
+            var nodes = originalNode.SelectNodes(".//p | .//ul");
             if (nodes != null)
             {
+
                 foreach (HtmlNode p in nodes)
                 {
                     if (String.IsNullOrWhiteSpace(p.InnerText)) continue;
